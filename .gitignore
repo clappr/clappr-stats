@@ -1,0 +1,21 @@
+node_modules
+.DS_Store
+.env
+coverage
+build/
+docs/
+src/base/jst.js
+*.cache
+aws.json
+npm-debug.log
+
+# bump
+*.bkp
+
+# Vim
+*~
+*.swp
+*.swo
+
+# PhpStorm
+.idea
