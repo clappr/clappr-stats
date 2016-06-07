@@ -20,9 +20,6 @@ export default class ClapprStats extends ContainerPlugin {
 
   constructor(container) {
     super(container)
-    // options.clapprStats.runEach: 5 || 5
-    // options.clapprStats.onReport: (metrics) || on('clappr:stats:report', fn) each X and at the ENDEDE or STOP
-    // options.clapprStats.uriToMeasureLatency:  provide an img uri hosted at the same place as your farm or near of it  prefferable 1x1 px, without caching.
     this._runEach = get(container, 'options.clapprStats.runEach', 5)
     this._onReport = get(container, 'options.clapprStats.onReport', this._defaultReport)
     this._uriToMeasureLatency = get(container, 'options.clapprStats.uriToMeasureLatency')
@@ -143,14 +140,14 @@ export default class ClapprStats extends ContainerPlugin {
     if (this._uriToMeasureLatency) {
       var t=[], n=2, tcp, rtt;
       var ld = function() {
-	t.push(+new Date);
+	t.push(this._now());
 	if(t.length > n)
-	  done();
+	  done(); // ????
 	else {
 	  var img = new Image;
 	  img.onload = ld;
 	  img.src=imageURI + '?' + Math.random()
-	  + '=' + new Date;
+	  + '=' + this._now();
 	}
       };
       var done = function() {
