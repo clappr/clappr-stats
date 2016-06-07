@@ -23,6 +23,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._runEach = get(container, 'options.clapprStats.runEach', 5000)
     this._onReport = get(container, 'options.clapprStats.onReport', this._defaultReport)
     this._uriToMeasureLatency = get(container, 'options.clapprStats.uriToMeasureLatency')
+    this._overrideMetrics = get(container, 'options.clapprStats.overrideMetrics')
 
     this._metrics = {
       counters: {
@@ -88,6 +89,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._state = PAUSED
   }
 
+  // the first time update from html5 fires before user hit play
   startStartup() {this._startstartup !== undefined && this._stop('startup')}
 
   onContainerUpdateWhilePlaying() {
@@ -114,6 +116,8 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._fetchExtras()
 
+    this._overrideMetrics && this._overrideMetrics(metrics)
+
     this.trigger(REPORT_EVENT, this._metrics)
   }
 
@@ -127,7 +131,7 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._metrics.counters.decodedFrames = decodedFrames
     this._metrics.counters.droppedFrames = droppedFrames
-    this._metrics.counters.fps = decodedFramesLastTime / (this._runEach/1000)
+    this._metrics.counters.fps = decodedFramesLastTime / (this._runEach / 1000)
 
     this._lastDecodedFramesCount = decodedFrames
 
