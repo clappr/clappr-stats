@@ -9,7 +9,10 @@ export default class ClapprStats extends ContainerPlugin {
 
   get _playbackName() {return this.container.playback.name}
   get _playbackType() {return this.container.getPlaybackType()}
-  _now() {return new Date()}
+  _now() {
+    var hasPerformanceSupport = performance && typeof(performance.now) === "function"
+    return (hasPerformanceSupport)?performance.now():new Date()
+  }
   _inc(counter) {this._metrics.counters[counter] += 1}
   _start(timer) {this[`_start${timer}`] = this._now()}
   _stop(timer) {this._metrics.timers[timer] += this._now() - this[`_start${timer}`]}
