@@ -16,3 +16,18 @@
     })
 </script>
 ```
+
+# Example metrics
+
+```javascript
+{
+  counters: {
+    play: 2, pause: 2, error: 0, buffering: 1, decodedFrames: 1890, droppedFrames: 3,
+    fps: 24, changeLevel: 0, seek: 1, fullscreen: 0, dvrUsage: 0
+  },
+  timers: {
+    startup: 0, watch: 4590, pause: 0, buffering: 10, session: 5001, latency: 0
+  },
+  extra: {playbackName: 'html5_video', playbackType: 'vod', lastBitrate: ''}
+}
+```
