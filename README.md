@@ -9,10 +9,9 @@
       height: 360,
       width: 640,
       clapprStats: {
-        runEach: 5000, //not mandatory: time in miliseconds for each report default:  5000
-        onReport: (metrics) => {console.log(metrics)}, //not mandatory: callback function
-        uriToMeasureLatency: 'http://www.example.com/images/tv/pixel-1x1-red.gif', //not mandatory: provide an img uri hosted at the same place as your farm or near of it prefferable 1x1px, without caching.
-        overrideMetrics: (metrics) => {metrics.counter.fps = 30} //not mandatory: if you want to override a specific metric
+        runEach: 5000, //optional: time in miliseconds for each report default:  5000
+        onReport: (metrics) => {console.log(metrics)}, //optional: callback function default: console.log
+        uriToMeasureLatency: 'http://www.example.com/images/tv/pixel-1x1-red.gif', //optional: provide an img uri hosted at the same place as your farm or near of it prefferable 1x1px, without caching. default: none
       }
     })
 </script>

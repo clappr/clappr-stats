@@ -23,7 +23,6 @@ export default class ClapprStats extends ContainerPlugin {
     this._runEach = get(container, 'options.clapprStats.runEach', 5000)
     this._onReport = get(container, 'options.clapprStats.onReport', this._defaultReport)
     this._uriToMeasureLatency = get(container, 'options.clapprStats.uriToMeasureLatency')
-    this._overrideMetrics = get(container, 'options.clapprStats.overrideMetrics')
 
     this._metrics = {
       counters: {
@@ -115,8 +114,6 @@ export default class ClapprStats extends ContainerPlugin {
     this._start('session')
 
     this._fetchExtras()
-
-    this._overrideMetrics && this._overrideMetrics(metrics)
 
     this.trigger(REPORT_EVENT, this._metrics)
   }
