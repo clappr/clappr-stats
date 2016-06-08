@@ -14,6 +14,7 @@ export default class ClapprStats extends ContainerPlugin {
     return (hasPerformanceSupport)?performance.now():new Date()
   }
   _inc(counter) {this._metrics.counters[counter] += 1}
+  _timerHasStarted(timer){return this[`_start${timer}`] !== undefined}
   _start(timer) {this[`_start${timer}`] = this._now()}
   _stop(timer) {this._metrics.timers[timer] += this._now() - this[`_start${timer}`]}
   _defaultReport(metrics) {console.log(metrics)}
@@ -89,7 +90,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   // the first time update from html5 fires before user hit play
-  startStartup() {this._startstartup !== undefined && this._stop('startup')}
+  startStartup() {this._timerHasStarted('startup') && this._stop('startup')}
 
   onContainerUpdateWhilePlaying() {
     this._stop('watch')
