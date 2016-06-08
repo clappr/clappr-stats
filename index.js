@@ -1,7 +1,6 @@
 import {ContainerPlugin, Log, Events} from 'clappr'
 import get from 'lodash.get'
 
-const PLAYING = 0, PAUSED = 1, BUFFERING = 2
 const REPORT_EVENT = 'clappr:stats:report'
 
 export default class ClapprStats extends ContainerPlugin {
@@ -43,12 +42,12 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_BITRATE, this.onBitrate)
     this.listenTo(this.container, Events.CONTAINER_STOP, this.stopReporting)
     this.listenTo(this.container, Events.CONTAINER_ENDED, this.stopReporting)
-    this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.startTimers)
-    this.listenTo(this.container, Events.CONTAINER_PLAY, () => this._state === PAUSED && this.playAfterPause())
+    this.listenToOnce(this.container.playback, Events.PLAYBACK_PLAY_INTENT, this.startTimers)
+    this.listenToOnce(this.container, Events.CONTAINER_PLAY, () => this._start('watch'))
     this.listenTo(this.container, Events.CONTAINER_PLAY, this.onPlay)
     this.listenTo(this.container, Events.CONTAINER_PAUSE, this.onPause)
-    this.listenToOnce(this.container, Events.CONTAINER_TIMEUPDATE, this.startStartup)
-    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, () => this._state === PLAYING && this.onContainerUpdateWhilePlaying())
+    this.listenToOnce(this.container, Events.CONTAINER_TIMEUPDATE, this.measureStartup)
+    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, () => this.container.playback.isPlaying() && this.onContainerUpdateWhilePlaying())
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
     this.listenTo(this.container, Events.CONTAINER_SEEK, () => this._inc('seek'))
     this.listenTo(this.container, Events.CONTAINER_ERROR, () => this._inc('error'))
@@ -82,13 +81,12 @@ export default class ClapprStats extends ContainerPlugin {
 
   onPlay() {
     this._inc('play')
-    this._state = PLAYING
   }
 
   onPause() {
     this._start('pause')
     this._inc('pause')
-    this._state = PAUSED
+    this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.playAfterPause)
   }
 
   // the first time update from html5 fires before user hit play
@@ -100,14 +98,12 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   onBuffering() {
-    this._state = BUFFERING
     this._inc('buffering')
     this._start('buffering')
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERFULL, this.onBufferfull)
   }
 
   onBufferfull() {
-    this._state = PLAYING
     this._stop('buffering')
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
   }
