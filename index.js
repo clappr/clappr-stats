@@ -9,7 +9,7 @@ export default class ClapprStats extends ContainerPlugin {
   get _playbackName() {return this.container.playback.name}
   get _playbackType() {return this.container.getPlaybackType()}
   _now() {
-    var hasPerformanceSupport = performance && typeof(performance.now) === "function"
+    const hasPerformanceSupport = performance && typeof(performance.now) === "function"
     return (hasPerformanceSupport)?performance.now():new Date()
   }
   _inc(counter) {this._metrics.counters[counter] += 1}
@@ -70,7 +70,6 @@ export default class ClapprStats extends ContainerPlugin {
   startTimers() {
     this._intervalId = setInterval(this._buildReport.bind(this), this._runEach)
     this._start('session')
-    this._start('watch')
     this._start('startup')
   }
 
@@ -90,7 +89,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   // the first time update from html5 fires before user hit play
-  startStartup() {this._timerHasStarted('startup') && this._stop('startup')}
+  measureStartup() {this._timerHasStarted('startup') && this._stop('startup')}
 
   onContainerUpdateWhilePlaying() {
     this._stop('watch')
@@ -126,19 +125,29 @@ export default class ClapprStats extends ContainerPlugin {
   _fetchExtras() {
     // flashls ??? - hls.droppedFramesl hls.stream.bufferLength (seconds)
     // hls ??? (use the same?)
-    var videoTag = this.container.playback.el
-    var decodedFrames = videoTag.webkitDecodedFrameCount || videoTag.mozDecodedFrames || 0
-    var droppedFrames = (videoTag.webkitDroppedFrameCount || (videoTag.mozParsedFrames - videoTag.mozDecodedFrames)) || 0
-    var decodedFramesLastTime = decodedFrames - (this._lastDecodedFramesCount || 0)
+    const fetchFPS = {
+     'html5_video': this._html5FetchFPS,
+     'hls': this._html5FetchFPS,
+     'dash_shaka_playback': this._html5FetchFPS
+    }
+
+    fetchFPS[this._playbackName] && fetchFPS[this._playbackName].call(this)
+
+    this._metrics.extra.playbackName = this._playbackName
+    this._metrics.extra.playbackType = this._playbackType
+  }
+
+  _html5FetchFPS() {
+    const videoTag = this.container.playback.el
+    const decodedFrames = videoTag.webkitDecodedFrameCount || videoTag.mozDecodedFrames || 0
+    const droppedFrames = (videoTag.webkitDroppedFrameCount || (videoTag.mozParsedFrames - videoTag.mozDecodedFrames)) || 0
+    const decodedFramesLastTime = decodedFrames - (this._lastDecodedFramesCount || 0)
 
     this._metrics.counters.decodedFrames = decodedFrames
     this._metrics.counters.droppedFrames = droppedFrames
     this._metrics.counters.fps = decodedFramesLastTime / (this._runEach / 1000)
 
     this._lastDecodedFramesCount = decodedFrames
-
-    this._metrics.extra.playbackName = this._playbackName
-    this._metrics.extra.playbackType = this._playbackType
   }
 
   // originally from https://www.smashingmagazine.com/2011/11/analyzing-network-characteristics-using-javascript-and-the-dom-part-1/
