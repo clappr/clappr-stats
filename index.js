@@ -54,7 +54,9 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_ERROR, () => this._inc('error'))
     this.listenTo(this.container, Events.CONTAINER_FULLSCREEN, () => this._inc('fullscreen'))
     this.listenTo(this.container, Events.CONTAINER_PLAYBACKDVRSTATECHANGED, (dvrInUse) => {dvrInUse && this._inc('dvrUsage')})
+    this.once(REPORT_EVENT, this._fetchLatency)
   }
+
 
   onBitrate(bitrate) {
     this._metrics.extra.lastBitrate = get(bitrate, 'height', '')
@@ -110,6 +112,12 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
   }
 
+  //measuring only two times is enough => "take(2)" of events
+  _fetchLatency() {
+    this._measureLatency()
+    this.once(REPORT_EVENT, this._measureLatency)
+  }
+
   _buildReport() {
     this._stop('session')
     this._start('session')
@@ -138,23 +146,24 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   // originally from https://www.smashingmagazine.com/2011/11/analyzing-network-characteristics-using-javascript-and-the-dom-part-1/
-  _measureLatency(imageURI) {
+  _measureLatency() {
     if (this._uriToMeasureLatency) {
       var t=[], n=2, tcp, rtt;
-      var ld = function() {
+      var ld = () => {
 	t.push(this._now());
 	if(t.length > n)
-	  done(); // ????
+	  done();
 	else {
 	  var img = new Image;
 	  img.onload = ld;
-	  img.src=imageURI + '?' + Math.random()
+	  img.src=this._uriToMeasureLatency + '?' + Math.random()
 	  + '=' + this._now();
 	}
       };
-      var done = function() {
-	rtt=t[2]-t[1];
-	tcp=t[1]-t[0]-rtt;
+      var done = () => {
+	rtt=t[2]-t[1]
+	tcp=t[1]-t[0]-rtt
+        this._metrics.timers.latency = rtt
       };
       ld();
     }
