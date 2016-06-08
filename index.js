@@ -116,7 +116,7 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._fetchExtras()
 
-    this.trigger(REPORT_EVENT, this._metrics)
+    this.trigger(REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)))
   }
 
   _fetchExtras() {
