@@ -33,7 +33,7 @@ export default class ClapprStats extends ContainerPlugin {
 	startup: 0, watch: 0, pause: 0, buffering: 0, session: 0, latency: 0
       },
       extra: {
-        playbackName: '', playbackType: '', bitrates: [], bitrateMean: 0,
+        playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
         bitrateVariance: 0, bitrateStandardDeviation: 0
       } //buffersize, all playbacks???
     }
@@ -49,8 +49,8 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenToOnce(this.container, Events.CONTAINER_PLAY, () => this._start('watch'))
     this.listenTo(this.container, Events.CONTAINER_PLAY, this.onPlay)
     this.listenTo(this.container, Events.CONTAINER_PAUSE, this.onPause)
-    this.listenToOnce(this.container, Events.CONTAINER_TIMEUPDATE, this.measureStartup)
-    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, () => this.container.playback.isPlaying() && this.onContainerUpdateWhilePlaying())
+    this.listenToOnce(this.container, Events.CONTAINER_TIMEUPDATE, (e) => e.current > 0 && this._stop('startup')) //should be at PLAY
+    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, (e) => e.current > 0 && this.onContainerUpdateWhilePlaying())
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
     this.listenTo(this.container, Events.CONTAINER_SEEK, () => this._inc('seek'))
     this.listenTo(this.container, Events.CONTAINER_ERROR, () => this._inc('error'))
@@ -62,7 +62,16 @@ export default class ClapprStats extends ContainerPlugin {
 
   onBitrate(bitrate) {
     var height = parseInt(get(bitrate, 'height', 0), 10)
-    this._metrics.extra.bitrates.push(height)
+    var now = this._now()
+
+    if (this._metrics.extra.bitratesHistory.length > 0) {
+      var beforeLast = this._metrics.extra.bitratesHistory[this._metrics.extra.bitratesHistory.length-1]
+      beforeLast.end = now
+      beforeLast.time = now - beforeLast.start
+    }
+
+    this._metrics.extra.bitratesHistory.push({start: this._now(), height: height})
+
     this._inc('changeLevel')
   }
 
@@ -91,9 +100,6 @@ export default class ClapprStats extends ContainerPlugin {
     this._inc('pause')
     this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.playAfterPause)
   }
-
-  // the first time update from html5 fires before user hit play
-  measureStartup() {this._timerHasStarted('startup') && this._stop('startup')}
 
   onContainerUpdateWhilePlaying() {
     this._stop('watch')
@@ -140,11 +146,16 @@ export default class ClapprStats extends ContainerPlugin {
     this._metrics.extra.playbackName = this._playbackName
     this._metrics.extra.playbackType = this._playbackType
 
-    var bitrates = this._metrics.extra.bitrates
+    var bitrates = this._metrics.extra.bitratesHistory.map((x) => x.height)
 
     this._metrics.extra.bitrateMean = bitrates.reduce((a,b) => a + b) / bitrates.length
-    this._metrics.extra.bitrateVariance = bitrates.map((n) => Math.pow(n - avg, 2)).reduce((a,b) => a + b) / bitrates.length
-    this._metrics.extra.bitrateStandardDeviation = Math.sqrt(this._metrics.extras.bitrateVariance)
+
+    this._metrics.extra.bitrateVariance = bitrates.map((n) => {
+      return Math.pow(n - this._metrics.extra.bitrateMean, 2)
+    }).reduce((a,b) => a + b) / bitrates.length
+
+    this._metrics.extra.bitrateStandardDeviation = Math.sqrt(this._metrics.extra.bitrateVariance)
+    this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.sort((a,b) => a.time < b.time)[0].height
   }
 
   _html5FetchFPS() {
