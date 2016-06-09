@@ -32,7 +32,10 @@ export default class ClapprStats extends ContainerPlugin {
       timers: {
 	startup: 0, watch: 0, pause: 0, buffering: 0, session: 0, latency: 0
       },
-      extra: {playbackName: '', playbackType: '', lastBitrate: ''} //buffersize, all playbacks???
+      extra: {
+        playbackName: '', playbackType: '', bitrates: [], bitrateMean: 0,
+        bitrateVariance: 0, bitrateStandardDeviation: 0
+      } //buffersize, all playbacks???
     }
 
     this.on(REPORT_EVENT, this._onReport)
@@ -58,7 +61,8 @@ export default class ClapprStats extends ContainerPlugin {
 
 
   onBitrate(bitrate) {
-    this._metrics.extra.lastBitrate = get(bitrate, 'height', '')
+    var height = parseInt(get(bitrate, 'height', 0), 10)
+    this._metrics.extra.bitrates.push(height)
     this._inc('changeLevel')
   }
 
@@ -135,6 +139,12 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._metrics.extra.playbackName = this._playbackName
     this._metrics.extra.playbackType = this._playbackType
+
+    var bitrates = this._metrics.extra.bitrates
+
+    this._metrics.extra.bitrateMean = bitrates.reduce((a,b) => a + b) / bitrates.length
+    this._metrics.extra.bitrateVariance = bitrates.map((n) => Math.pow(n - avg, 2)).reduce((a,b) => a + b) / bitrates.length
+    this._metrics.extra.bitrateStandardDeviation = Math.sqrt(this._metrics.extras.bitrateVariance)
   }
 
   _html5FetchFPS() {
