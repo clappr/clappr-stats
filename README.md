@@ -17,17 +17,39 @@
 </script>
 ```
 
-# Example metrics
+# Metrics
 
 ```javascript
 {
   counters: {
-    play: 2, pause: 2, error: 0, buffering: 1, decodedFrames: 1890, droppedFrames: 3,
-    fps: 24, changeLevel: 0, seek: 1, fullscreen: 0, dvrUsage: 0
+    play: 0, // number of plays
+    pause: 0, // number of pauses
+    error: 0, // number of errors
+    buffering: 0, // number of bufferings
+    decodedFrames: 0, // number of decoded frames (when available)
+    droppedFrames: 0, // number of dropped frames (when available)
+    fps: 0, // frames per second (when available)
+    changeLevel: 0, // number of adaptative bitrate changes
+    seek: 0, // number of seeks
+    fullscreen: 0, // number of times that user went to fullscreen
+    dvrUsage: 0 // number of time taht user used dvr seek (at live stream)
   },
   timers: {
-    startup: 0, watch: 4590, pause: 0, buffering: 10, session: 5001, latency: 0
+    startup: 0, // time (ms) since user click/touch play (intent to play) to the play
+    watch: 0, // time (ms) of watched content (does not include pause and buffering)
+    pause: 0, // time (ms) of paused content
+    buffering: 0, // time (ms) of buffering
+    session: 0, // time (ms) of session (sum of watch+pause+buffering)
+    latency: 0, // time (ms) of latency between user and the uri provided
   },
-  extra: {playbackName: 'html5_video', playbackType: 'vod', lastBitrate: ''}
+  extra: {
+    playbackName: '', // playback name (hls, html5_video, flashls)
+    playbackType: '', // vod or live
+    bitratesHistory: [], // the bitrates changes history
+    bitrateMean: 0, // bitrate mean
+    bitrateVariance: 0, // bitrate variance
+    bitrateStandardDeviation: 0, // bitrate standard deviation
+    bitrateMostUsed: 0, // most used (based on time) bitrate
+  }
 }
 ```
