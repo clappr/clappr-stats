@@ -57,8 +57,8 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_FULLSCREEN, () => this._inc('fullscreen'))
     this.listenTo(this.container, Events.CONTAINER_PLAYBACKDVRSTATECHANGED, (dvrInUse) => {dvrInUse && this._inc('dvrUsage')})
     this.once(REPORT_EVENT, this._fetchLatency)
+    this.listenTo(this.container.playback, Events.PLAYBACK_PROGRESS, this.onProgress)
   }
-
 
   onBitrate(bitrate) {
     var height = parseInt(get(bitrate, 'height', 0), 10)
@@ -123,6 +123,10 @@ export default class ClapprStats extends ContainerPlugin {
     this.once(REPORT_EVENT, this._measureLatency)
   }
 
+  onProgress(progress) {
+    this._metrics.extra.buffersize = progress.current * 1000
+  }
+
   _buildReport() {
     this._stop('session')
     this._start('session')
@@ -148,14 +152,14 @@ export default class ClapprStats extends ContainerPlugin {
 
     var bitrates = this._metrics.extra.bitratesHistory.map((x) => x.height)
 
-    this._metrics.extra.bitrateMean = bitrates.reduce((a,b) => a + b) / bitrates.length
+    this._metrics.extra.bitrateMean = bitrates.reduce((a,b) => a + b, 0) / bitrates.length
 
     this._metrics.extra.bitrateVariance = bitrates.map((n) => {
       return Math.pow(n - this._metrics.extra.bitrateMean, 2)
-    }).reduce((a,b) => a + b) / bitrates.length
+    }).reduce((a,b) => a + b, 0) / bitrates.length
 
     this._metrics.extra.bitrateStandardDeviation = Math.sqrt(this._metrics.extra.bitrateVariance)
-    this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.sort((a,b) => a.time < b.time)[0].height
+    this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.sort((a,b) => a.time < b.time)[0]
   }
 
   _html5FetchFPS() {

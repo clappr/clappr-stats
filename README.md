@@ -45,6 +45,7 @@
   extra: {
     playbackName: '', // playback name (hls, html5_video, flashls)
     playbackType: '', // vod or live
+    buffersize: 0, // buffersize in ms
     bitratesHistory: [], // the bitrates changes history
     bitrateMean: 0, // bitrate mean
     bitrateVariance: 0, // bitrate variance
