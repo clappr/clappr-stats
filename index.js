@@ -9,14 +9,14 @@ export default class ClapprStats extends ContainerPlugin {
   get _playbackName() {return this.container.playback.name}
   get _playbackType() {return this.container.getPlaybackType()}
   _now() {
-    const hasPerformanceSupport = performance && typeof(performance.now) === "function"
+    const hasPerformanceSupport = performance && typeof(performance.now) === 'function'
     return (hasPerformanceSupport)?performance.now():new Date()
   }
   _inc(counter) {this._metrics.counters[counter] += 1}
   _timerHasStarted(timer){return this[`_start${timer}`] !== undefined}
   _start(timer) {this[`_start${timer}`] = this._now()}
   _stop(timer) {this._metrics.timers[timer] += this._now() - this[`_start${timer}`]}
-  _defaultReport(metrics) {console.log(metrics)}
+  _defaultReport(metrics) {console.log(metrics)} //eslint-disable-line no-console
 
   constructor(container) {
     super(container)
@@ -26,11 +26,11 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._metrics = {
       counters: {
-	play: 0, pause: 0, error: 0, buffering: 0, decodedFrames: 0, droppedFrames: 0,
-	fps: 0, changeLevel: 0, seek: 0, fullscreen: 0, dvrUsage: 0
+        play: 0, pause: 0, error: 0, buffering: 0, decodedFrames: 0, droppedFrames: 0,
+        fps: 0, changeLevel: 0, seek: 0, fullscreen: 0, dvrUsage: 0
       },
       timers: {
-	startup: 0, watch: 0, pause: 0, buffering: 0, session: 0, latency: 0
+        startup: 0, watch: 0, pause: 0, buffering: 0, session: 0, latency: 0
       },
       extra: {
         playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
@@ -141,9 +141,9 @@ export default class ClapprStats extends ContainerPlugin {
     // flashls ??? - hls.droppedFramesl hls.stream.bufferLength (seconds)
     // hls ??? (use the same?)
     const fetchFPS = {
-     'html5_video': this._html5FetchFPS,
-     'hls': this._html5FetchFPS,
-     'dash_shaka_playback': this._html5FetchFPS
+      'html5_video': this._html5FetchFPS,
+      'hls': this._html5FetchFPS,
+      'dash_shaka_playback': this._html5FetchFPS
     }
 
     fetchFPS[this._playbackName] && fetchFPS[this._playbackName].call(this)
@@ -179,23 +179,23 @@ export default class ClapprStats extends ContainerPlugin {
   // originally from https://www.smashingmagazine.com/2011/11/analyzing-network-characteristics-using-javascript-and-the-dom-part-1/
   _measureLatency() {
     if (this._uriToMeasureLatency) {
-      var t=[], n=2, rtt;
+      var t=[], n=2, rtt
       var ld = () => {
-	t.push(this._now());
-	if(t.length > n)
-	  done();
-	else {
-	  var img = new Image;
-	  img.onload = ld;
-	  img.src=this._uriToMeasureLatency + '?' + Math.random()
-	  + '=' + this._now();
-	}
-      };
+        t.push(this._now())
+        if(t.length > n)
+          done()
+        else {
+          var img = new Image
+          img.onload = ld
+          img.src=this._uriToMeasureLatency + '?' + Math.random()
+          + '=' + this._now()
+        }
+      }
       var done = () => {
-	rtt=t[2]-t[1]
+        rtt=t[2]-t[1]
         this._metrics.timers.latency = rtt
-      };
-      ld();
+      }
+      ld()
     }
   }
 }
