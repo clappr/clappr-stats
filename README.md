@@ -11,7 +11,8 @@
       clapprStats: {
         runEach: 5000, //optional: time in miliseconds for each report default:  5000
         onReport: (metrics) => {console.log(metrics)}, //optional: callback function default: console.log
-        uriToMeasureLatency: 'http://www.example.com/images/tv/pixel-1x1-red.gif', //optional: provide an img uri hosted at the same place as your farm or near of it prefferable 1x1px, without caching. default: none
+        uriToMeasureLatency: 'http://www.example.com/images/tv/pixel-1x1-red.gif', //optional: provide an img uri hosted at
+        // the same place as your farm or near of it prefferable 1x1px, without caching. default: none
       }
     })
 </script>
@@ -40,17 +41,17 @@
     pause: 0, // time (ms) of paused content
     buffering: 0, // time (ms) of buffering
     session: 0, // time (ms) of session (sum of watch+pause+buffering)
-    latency: 0, // time (ms) of latency between user and the uri provided
+    latency: 0, // time (ms) of latency between user and the provided uri
   },
   extra: {
     playbackName: '', // playback name (hls, html5_video, flashls)
     playbackType: '', // vod or live
     buffersize: 0, // buffersize in ms
     bitratesHistory: [], // the bitrates changes history
-    bitrateMean: 0, // bitrate mean
-    bitrateVariance: 0, // bitrate variance
-    bitrateStandardDeviation: 0, // bitrate standard deviation
-    bitrateMostUsed: 0, // most used (based on time) bitrate
+    bitrateMean: 0, // bitrate mean (kbps)  (we're considering height as "bitrate")
+    bitrateVariance: 0, // bitrate variance (kbps)  (we're considering height as "bitrate")
+    bitrateStandardDeviation: 0, // bitrate standard deviation (kbps)  (we're considering height as "bitrate")
+    bitrateMostUsed: 0, // most used (based on time) bitrate  (kbps)  (we're considering height as "bitrate")
   }
 }
 ```
