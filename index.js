@@ -34,8 +34,9 @@ export default class ClapprStats extends ContainerPlugin {
       },
       extra: {
         playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
-        bitrateVariance: 0, bitrateStandardDeviation: 0, bitrateMostUsed: 0
-      } //buffersize, all playbacks???
+        bitrateVariance: 0, bitrateStandardDeviation: 0, bitrateMostUsed: 0,
+        buffersize: 0
+      }
     }
 
     this.on(REPORT_EVENT, this._onReport)
