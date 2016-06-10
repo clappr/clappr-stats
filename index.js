@@ -1,4 +1,4 @@
-import {ContainerPlugin, Log, Events} from 'clappr'
+import {ContainerPlugin, Events} from 'clappr'
 import get from 'lodash.get'
 
 const REPORT_EVENT = 'clappr:stats:report'
@@ -179,7 +179,7 @@ export default class ClapprStats extends ContainerPlugin {
   // originally from https://www.smashingmagazine.com/2011/11/analyzing-network-characteristics-using-javascript-and-the-dom-part-1/
   _measureLatency() {
     if (this._uriToMeasureLatency) {
-      var t=[], n=2, tcp, rtt;
+      var t=[], n=2, rtt;
       var ld = () => {
 	t.push(this._now());
 	if(t.length > n)
@@ -193,7 +193,6 @@ export default class ClapprStats extends ContainerPlugin {
       };
       var done = () => {
 	rtt=t[2]-t[1]
-	tcp=t[1]-t[0]-rtt
         this._metrics.timers.latency = rtt
       };
       ld();
