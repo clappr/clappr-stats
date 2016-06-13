@@ -1,4 +1,9 @@
+[![npm version](https://badge.fury.io/js/clappr-stats.svg)](https://badge.fury.io/js/clappr-stats)
+[![license](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)
+
 # Usage
+
+You can use if from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clappr-stats.min.js` or npm package.
 
 ```html
 <script>
