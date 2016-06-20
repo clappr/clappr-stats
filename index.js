@@ -47,10 +47,9 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_STOP, this.stopReporting)
     this.listenTo(this.container, Events.CONTAINER_ENDED, this.stopReporting)
     this.listenToOnce(this.container.playback, Events.PLAYBACK_PLAY_INTENT, this.startTimers)
-    this.listenToOnce(this.container, Events.CONTAINER_PLAY, () => this._start('watch'))
+    this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.onFirstPlaying)
     this.listenTo(this.container, Events.CONTAINER_PLAY, this.onPlay)
     this.listenTo(this.container, Events.CONTAINER_PAUSE, this.onPause)
-    this.listenToOnce(this.container, Events.CONTAINER_TIMEUPDATE, (e) => e.current > 0 && this._stop('startup')) //should be at PLAY
     this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, (e) => e.current > 0 && this.onContainerUpdateWhilePlaying())
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
     this.listenTo(this.container, Events.CONTAINER_SEEK, () => this._inc('seek'))
@@ -85,6 +84,11 @@ export default class ClapprStats extends ContainerPlugin {
     this._intervalId = setInterval(this._buildReport.bind(this), this._runEach)
     this._start('session')
     this._start('startup')
+  }
+
+  onFirstPlaying() {
+    this._start('watch')
+    this._stop('startup')
   }
 
   playAfterPause() {
