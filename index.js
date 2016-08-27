@@ -56,7 +56,6 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_ERROR, () => this._inc('error'))
     this.listenTo(this.container, Events.CONTAINER_FULLSCREEN, () => this._inc('fullscreen'))
     this.listenTo(this.container, Events.CONTAINER_PLAYBACKDVRSTATECHANGED, (dvrInUse) => {dvrInUse && this._inc('dvrUsage')})
-    this.once(REPORT_EVENT, this._fetchLatency)
     this.listenTo(this.container.playback, Events.PLAYBACK_PROGRESS, this.onProgress)
   }
 
@@ -122,12 +121,6 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
   }
 
-  //measuring only two times is enough => "take(2)" of events
-  _fetchLatency() {
-    this._measureLatency()
-    this.once(REPORT_EVENT, this._measureLatency)
-  }
-
   onProgress(progress) {
     this._metrics.extra.buffersize = progress.current * 1000
   }
@@ -136,12 +129,17 @@ export default class ClapprStats extends ContainerPlugin {
     this._stop('session')
     this._start('session')
 
-    this._fetchExtras()
+    this._metrics.extra.playbackName = this._playbackName
+    this._metrics.extra.playbackType = this._playbackType
+    
+    this._calculateBitrates()
+    this._fetchFPS()
+    this._measureLatency()
 
     this.trigger(REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)))
   }
 
-  _fetchExtras() {
+  _fetchFPS() {
     // flashls ??? - hls.droppedFramesl hls.stream.bufferLength (seconds)
     // hls ??? (use the same?)
     const fetchFPS = {
@@ -151,10 +149,9 @@ export default class ClapprStats extends ContainerPlugin {
     }
 
     fetchFPS[this._playbackName] && fetchFPS[this._playbackName].call(this)
+  }
 
-    this._metrics.extra.playbackName = this._playbackName
-    this._metrics.extra.playbackType = this._playbackType
-
+  _calculateBitrates() {
     var bitrates = this._metrics.extra.bitratesHistory.map((x) => x.height)
 
     this._metrics.extra.bitrateMean = bitrates.reduce((a,b) => a + b, 0) / bitrates.length
