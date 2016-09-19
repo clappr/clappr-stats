@@ -3,7 +3,7 @@
 
 # Usage
 
-You can use if from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clappr-stats.min.js` or npm package.
+You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clappr-stats.min.js` or as a npm package.
 
 ```html
 <script>
