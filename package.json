@@ -1,6 +1,6 @@
 {
   "name": "clappr-stats",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "clappr playback stats report plugin",
   "main": "index.js",
   "repository": {
@@ -16,7 +16,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "lodash.get": "^4.3.0",
-    "clappr": "latest"
+    "clappr": "0.2.63"
   },
   "devDependencies": {
     "webpack": "^1.12.1",
