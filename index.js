@@ -100,6 +100,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   onPause() {
+    this._stop('watch')
     this._start('pause')
     this._inc('pause')
     this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.playAfterPause)
