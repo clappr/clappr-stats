@@ -53,10 +53,10 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
     playbackType: '', // vod or live
     buffersize: 0, // buffersize in ms
     bitratesHistory: [], // the bitrates changes history
-    bitrateMean: 0, // bitrate mean (kbps)  (we're considering height as "bitrate")
-    bitrateVariance: 0, // bitrate variance (kbps)  (we're considering height as "bitrate")
-    bitrateStandardDeviation: 0, // bitrate standard deviation (kbps)  (we're considering height as "bitrate")
-    bitrateMostUsed: 0, // most used (based on time) bitrate  (kbps)  (we're considering height as "bitrate")
+    bitrateMean: 0, // bitrate mean (kbps)
+    bitrateVariance: 0, // bitrate variance (kbps)
+    bitrateStandardDeviation: 0, // bitrate standard deviation (kbps)
+    bitrateMostUsed: 0, // most used (based on time) bitrate  (kbps)
   }
 }
 ```

@@ -59,8 +59,8 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container.playback, Events.PLAYBACK_PROGRESS, this.onProgress)
   }
 
-  onBitrate(bitrate) {
-    var height = parseInt(get(bitrate, 'height', 0), 10)
+  onBitrate(newBitrate) {
+    var bitrate = parseInt(get(newBitrate, 'bitrate', 0), 10)
     var now = this._now()
 
     if (this._metrics.extra.bitratesHistory.length > 0) {
@@ -69,7 +69,7 @@ export default class ClapprStats extends ContainerPlugin {
       beforeLast.time = now - beforeLast.start
     }
 
-    this._metrics.extra.bitratesHistory.push({start: this._now(), height: height})
+    this._metrics.extra.bitratesHistory.push({start: this._now(), bitrate: bitrate})
 
     this._inc('changeLevel')
   }
@@ -152,7 +152,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _calculateBitrates() {
-    var bitrates = this._metrics.extra.bitratesHistory.map((x) => x.height)
+    var bitrates = this._metrics.extra.bitratesHistory.map((x) => x.bitrate)
 
     this._metrics.extra.bitrateMean = bitrates.reduce((a,b) => a + b, 0) / bitrates.length
 
