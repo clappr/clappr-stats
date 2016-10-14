@@ -50,7 +50,6 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.onFirstPlaying)
     this.listenTo(this.container, Events.CONTAINER_PLAY, this.onPlay)
     this.listenTo(this.container, Events.CONTAINER_PAUSE, this.onPause)
-    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, (e) => e.current > 0 && this.onContainerUpdateWhilePlaying())
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
     this.listenTo(this.container, Events.CONTAINER_SEEK, () => this._inc('seek'))
     this.listenTo(this.container, Events.CONTAINER_ERROR, () => this._inc('error'))
@@ -86,6 +85,8 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   onFirstPlaying() {
+    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, (e) => this.container.playback.isPlaying() && this.onContainerUpdateWhilePlaying())
+
     this._start('watch')
     this._stop('startup')
   }

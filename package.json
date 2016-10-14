@@ -8,6 +8,7 @@
     "url": "git@github.com:leandromoreira/clappr-stats.git"
   },
   "scripts": {
+    "watch": "node_modules/.bin/webpack -d --watch",
     "build": "node_modules/.bin/webpack",
     "start": "node_modules/.bin/webpack-dev-server --host 0.0.0.0 --content-base public/ --hot",
     "release": "node_modules/.bin/webpack -p"
