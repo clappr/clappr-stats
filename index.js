@@ -24,21 +24,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._onReport = get(container, 'options.clapprStats.onReport', this._defaultReport)
     this._uriToMeasureLatency = get(container, 'options.clapprStats.uriToMeasureLatency')
 
-    this._metrics = {
-      counters: {
-        play: 0, pause: 0, error: 0, buffering: 0, decodedFrames: 0, droppedFrames: 0,
-        fps: 0, changeLevel: 0, seek: 0, fullscreen: 0, dvrUsage: 0
-      },
-      timers: {
-        startup: 0, watch: 0, pause: 0, buffering: 0, session: 0, latency: 0
-      },
-      extra: {
-        playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
-        bitrateVariance: 0, bitrateStandardDeviation: 0, bitrateMostUsed: 0,
-        buffersize: 0
-      }
-    }
-
+    this._newMetrics()
     this.on(REPORT_EVENT, this._onReport)
   }
 
@@ -75,7 +61,16 @@ export default class ClapprStats extends ContainerPlugin {
 
   stopReporting() {
     this._buildReport()
+
     clearInterval(this._intervalId)
+    this._newMetrics()
+
+    this.container.off(Events.CONTAINER_TIMEUPDATE, this.onContainerUpdateWhilePlaying)
+    this.container.off(Events.CONTAINER_PLAY, this.playAfterPause)
+
+    this.listenToOnce(this.container.playback, Events.PLAYBACK_PLAY_INTENT, this.startTimers)
+    this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.onFirstPlaying)
+    this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
   }
 
   startTimers() {
@@ -85,7 +80,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   onFirstPlaying() {
-    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, (e) => this.container.playback.isPlaying() && this.onContainerUpdateWhilePlaying())
+    this.listenTo(this.container, Events.CONTAINER_TIMEUPDATE, this.onContainerUpdateWhilePlaying)
 
     this._start('watch')
     this._stop('startup')
@@ -108,8 +103,10 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   onContainerUpdateWhilePlaying() {
-    this._stop('watch')
-    this._start('watch')
+    if (this.container.playback.isPlaying()) {
+      this._stop('watch')
+      this._start('watch')
+    }
   }
 
   onBuffering() {
@@ -125,6 +122,23 @@ export default class ClapprStats extends ContainerPlugin {
 
   onProgress(progress) {
     this._metrics.extra.buffersize = progress.current * 1000
+  }
+
+  _newMetrics() {
+    this._metrics = {
+      counters: {
+        play: 0, pause: 0, error: 0, buffering: 0, decodedFrames: 0, droppedFrames: 0,
+        fps: 0, changeLevel: 0, seek: 0, fullscreen: 0, dvrUsage: 0
+      },
+      timers: {
+        startup: 0, watch: 0, pause: 0, buffering: 0, session: 0, latency: 0
+      },
+      extra: {
+        playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
+        bitrateVariance: 0, bitrateStandardDeviation: 0, bitrateMostUsed: 0,
+        buffersize: 0
+      }
+    }
   }
 
   _buildReport() {
