@@ -65,12 +65,8 @@ export default class ClapprStats extends ContainerPlugin {
     clearInterval(this._intervalId)
     this._newMetrics()
 
-    this.container.off(Events.CONTAINER_TIMEUPDATE, this.onContainerUpdateWhilePlaying)
-    this.container.off(Events.CONTAINER_PLAY, this.playAfterPause)
-
-    this.listenToOnce(this.container.playback, Events.PLAYBACK_PLAY_INTENT, this.startTimers)
-    this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.onFirstPlaying)
-    this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
+    this.stopListening()
+    this.bindEvents() 
   }
 
   startTimers() {
