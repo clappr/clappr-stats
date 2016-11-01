@@ -37,11 +37,12 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_PLAY, this.onPlay)
     this.listenTo(this.container, Events.CONTAINER_PAUSE, this.onPause)
     this.listenToOnce(this.container, Events.CONTAINER_STATE_BUFFERING, this.onBuffering)
-    this.listenTo(this.container, Events.CONTAINER_SEEK, () => this._inc('seek'))
+    this.listenTo(this.container, Events.CONTAINER_SEEK, this.onSeek)
     this.listenTo(this.container, Events.CONTAINER_ERROR, () => this._inc('error'))
     this.listenTo(this.container, Events.CONTAINER_FULLSCREEN, () => this._inc('fullscreen'))
     this.listenTo(this.container, Events.CONTAINER_PLAYBACKDVRSTATECHANGED, (dvrInUse) => {dvrInUse && this._inc('dvrUsage')})
     this.listenTo(this.container.playback, Events.PLAYBACK_PROGRESS, this.onProgress)
+    this.listenTo(this.container.playback, Events.PLAYBACK_TIMEUPDATE, this.onTimeUpdate)
   }
 
   onBitrate(newBitrate) {
@@ -98,6 +99,26 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.playAfterPause)
   }
 
+  onSeek(e) {
+    this._inc('seek')
+    this._metrics.extra.watchHistory.push([e * 1000, e * 1000])
+  }
+
+  onTimeUpdate(e) {
+    var current = e.current * 1000,
+        total = e.total * 1000,
+        l = this._metrics.extra.watchHistory.length
+
+    this._metrics.extra.duration = total
+    this._metrics.extra.currentTime = current
+
+    if (l === 0) {
+      this._metrics.extra.watchHistory.push([current, current])
+    } else {
+      this._metrics.extra.watchHistory[l-1][1] = current
+    }
+  }
+
   onContainerUpdateWhilePlaying() {
     if (this.container.playback.isPlaying()) {
       this._stop('watch')
@@ -132,7 +153,7 @@ export default class ClapprStats extends ContainerPlugin {
       extra: {
         playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
         bitrateVariance: 0, bitrateStandardDeviation: 0, bitrateMostUsed: 0,
-        buffersize: 0
+        buffersize: 0, watchHistory: [], watchedPercentage: 0, bufferingPercentage: 0 
       }
     }
   }
@@ -145,6 +166,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._metrics.extra.playbackType = this._playbackType
     
     this._calculateBitrates()
+    this._calculatePercentages()
     this._fetchFPS()
     this._measureLatency()
 
@@ -174,6 +196,13 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._metrics.extra.bitrateStandardDeviation = Math.sqrt(this._metrics.extra.bitrateVariance)
     this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.sort((a,b) => a.time < b.time)[0]
+  }
+
+  _calculatePercentages() {
+     if (this._metrics.extra.duration > 0) {
+       this._metrics.extra.watchedPercentage = (this._metrics.timers.watch / this._metrics.extra.duration) * 100
+       this._metrics.extra.bufferingPercentage = (this._metrics.timers.buffering / this._metrics.extra.duration) * 100
+     }
   }
 
   _html5FetchFPS() {
