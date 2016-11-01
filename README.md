@@ -52,11 +52,16 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
     playbackName: '', // playback name (hls, html5_video, flashls)
     playbackType: '', // vod or live
     buffersize: 0, // buffersize in ms
+    duration: 0, // duration time in ms
+    currentTime: 0, // current time in ms
     bitratesHistory: [], // the bitrates changes history
     bitrateMean: 0, // bitrate mean (kbps)
     bitrateVariance: 0, // bitrate variance (kbps)
     bitrateStandardDeviation: 0, // bitrate standard deviation (kbps)
     bitrateMostUsed: 0, // most used (based on time) bitrate  (kbps)
+    watchHistory: [], // an array of an array of watched range time ex: [0, 2200]
+    watchedPercentage: 0, // % of watched time
+    bufferingPercentage: 0, // % of buffering time
   }
 }
 ```
