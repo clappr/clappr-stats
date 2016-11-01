@@ -106,7 +106,11 @@ export default class ClapprStats extends ContainerPlugin {
 
   onTimeUpdate(e) {
     var current = e.current * 1000,
+        total = e.total * 1000,
         l = this._metrics.extra.watchHistory.length
+
+    this._metrics.extra.duration = total
+    this._metrics.extra.currentTime = current
 
     if (l === 0) {
       this._metrics.extra.watchHistory.push([current, current])
@@ -149,7 +153,7 @@ export default class ClapprStats extends ContainerPlugin {
       extra: {
         playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
         bitrateVariance: 0, bitrateStandardDeviation: 0, bitrateMostUsed: 0,
-        buffersize: 0, watchHistory: []
+        buffersize: 0, watchHistory: [], watchedPercentage: 0, bufferingPercentage: 0 
       }
     }
   }
@@ -162,6 +166,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._metrics.extra.playbackType = this._playbackType
     
     this._calculateBitrates()
+    this._calculatePercentages()
     this._fetchFPS()
     this._measureLatency()
 
@@ -191,6 +196,13 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._metrics.extra.bitrateStandardDeviation = Math.sqrt(this._metrics.extra.bitrateVariance)
     this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.sort((a,b) => a.time < b.time)[0]
+  }
+
+  _calculatePercentages() {
+     if (this._metrics.extra.duration > 0) {
+       this._metrics.extra.watchedPercentage = (this._metrics.timers.watch / this._metrics.extra.duration) * 100
+       this._metrics.extra.bufferingPercentage = (this._metrics.timers.buffering / this._metrics.extra.duration) * 100
+     }
   }
 
   _html5FetchFPS() {
