@@ -3,6 +3,8 @@
 
 # Usage
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/clappr/clappr-stats.svg)](https://greenkeeper.io/)
+
 You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clappr-stats.min.js` or as a npm package.
 
 ```html
