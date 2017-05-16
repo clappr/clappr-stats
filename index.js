@@ -67,7 +67,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._newMetrics()
 
     this.stopListening()
-    this.bindEvents() 
+    this.bindEvents()
   }
 
   startTimers() {
@@ -151,9 +151,9 @@ export default class ClapprStats extends ContainerPlugin {
         startup: 0, watch: 0, pause: 0, buffering: 0, session: 0, latency: 0
       },
       extra: {
-        playbackName: '', playbackType: '', bitratesHistory: [], bitrateMean: 0,
-        bitrateVariance: 0, bitrateStandardDeviation: 0, bitrateMostUsed: 0,
-        buffersize: 0, watchHistory: [], watchedPercentage: 0, bufferingPercentage: 0 
+        playbackName: '', playbackType: '', bitratesHistory: [], bitrateWeightedMean: 0,
+        bitrateMostUsed: 0, buffersize: 0, watchHistory: [], watchedPercentage: 0,
+        bufferingPercentage: 0
       }
     }
   }
@@ -164,7 +164,7 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._metrics.extra.playbackName = this._playbackName
     this._metrics.extra.playbackType = this._playbackType
-    
+
     this._calculateBitrates()
     this._calculatePercentages()
     this._fetchFPS()
@@ -186,15 +186,11 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _calculateBitrates() {
-    var bitrates = this._metrics.extra.bitratesHistory.map((x) => x.bitrate)
+    this._metrics.extra.bitrateWeightedMean = this._metrics.extra.bitratesHistory.map((x) => {
+      var bitrateTime = x.time || (this._now() - x.start)
+      return x.bitrate * bitrateTime
+    }).reduce((a,b) => a + b, 0) / this._metrics.timers.watch
 
-    this._metrics.extra.bitrateMean = bitrates.reduce((a,b) => a + b, 0) / bitrates.length
-
-    this._metrics.extra.bitrateVariance = bitrates.map((n) => {
-      return Math.pow(n - this._metrics.extra.bitrateMean, 2)
-    }).reduce((a,b) => a + b, 0) / bitrates.length
-
-    this._metrics.extra.bitrateStandardDeviation = Math.sqrt(this._metrics.extra.bitrateVariance)
     this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.sort((a,b) => a.time < b.time)[0]
   }
 
