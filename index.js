@@ -186,8 +186,10 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _calculateBitrates() {
+    var bitratesWatchedTime = 0
     this._metrics.extra.bitrateWeightedMean = this._metrics.extra.bitratesHistory.map((x) => {
-      var bitrateTime = x.time || (this._now() - x.start)
+      bitratesWatchedTime += x.time || 0
+      var bitrateTime = x.time || (this._metrics.timers.watch - bitratesWatchedTime)
       return x.bitrate * bitrateTime
     }).reduce((a,b) => a + b, 0) / this._metrics.timers.watch
 
