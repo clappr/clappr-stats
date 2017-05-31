@@ -14,10 +14,27 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
       height: 360,
       width: 640,
       clapprStats: {
-        runEach: 5000, //optional: time in miliseconds for each report default:  5000
-        onReport: (metrics) => {console.log(metrics)}, //optional: callback function default: console.log
-        uriToMeasureLatency: 'http://www.example.com/images/tv/pixel-1x1-red.gif', //optional: provide an img uri hosted at
-        // the same place as your farm or near of it prefferable 1x1px, without caching. default: none
+        // optional: time in miliseconds for each report.
+        // default: 5000
+        runEach: 5000,
+        // optional: callback function.
+        // default: console.log
+        onReport: (metrics) => {console.log(metrics)},
+        // optional: provide an img uri hosted at the same place as your farm
+        // or near of it prefferable 1x1px, without caching.
+        // default: none
+        uriToMeasureLatency: 'http://www.example.com/images/tv/pixel-1x1-red.gif',
+        // optional: provide some assets uris hosted at the same place as your farm
+        // or near of it prefferable in an uncompressible file format, without caching.
+        // default: none
+        urisToMeasureBandwidth: [
+          {url: 'http://www.example.com/images/tv/500kb.jpg', timeout: 3000},
+          {url: 'http://www.example.com/images/tv/1mb.jpg', timeout: 6000},
+          {url: 'http://www.example.com/images/tv/5mb.jpg', timeout: 12000}
+        ],
+        // optional: number of reports between two consecutive bandwidth tests.
+        // default: 10
+        runBandwidthTestEvery: 10
       }
     })
 </script>
@@ -60,6 +77,7 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
     watchHistory: [], // an array of an array of watched range time ex: [0, 2200]
     watchedPercentage: 0, // % of watched time
     bufferingPercentage: 0, // % of buffering time
+    bandwidth: 0, // bandwidth in kbps
   }
 }
 ```
