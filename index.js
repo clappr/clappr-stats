@@ -23,6 +23,9 @@ export default class ClapprStats extends ContainerPlugin {
     this._runEach = get(container, 'options.clapprStats.runEach', 5000)
     this._onReport = get(container, 'options.clapprStats.onReport', this._defaultReport)
     this._uriToMeasureLatency = get(container, 'options.clapprStats.uriToMeasureLatency')
+    this._urisToMeasureBandwidth = get(container, 'options.clapprStats.urisToMeasureBandwidth')
+    this._runBandwidthTestEvery = get(container, 'options.clapprStats.runBandwidthTestEvery', 10)
+    this._bwMeasureCount = 0
 
     this._newMetrics()
     this.on(REPORT_EVENT, this._onReport)
@@ -153,7 +156,7 @@ export default class ClapprStats extends ContainerPlugin {
       extra: {
         playbackName: '', playbackType: '', bitratesHistory: [], bitrateWeightedMean: 0,
         bitrateMostUsed: 0, buffersize: 0, watchHistory: [], watchedPercentage: 0,
-        bufferingPercentage: 0
+        bufferingPercentage: 0, bandwidth: 0
       }
     }
   }
@@ -169,6 +172,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._calculatePercentages()
     this._fetchFPS()
     this._measureLatency()
+    this._measureBandwidth()
 
     this.trigger(REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)))
   }
@@ -237,5 +241,50 @@ export default class ClapprStats extends ContainerPlugin {
       }
       ld()
     }
+  }
+
+  // originally from https://www.smashingmagazine.com/2011/11/analyzing-network-characteristics-using-javascript-and-the-dom-part-1/
+  _measureBandwidth() {
+    if (this._urisToMeasureBandwidth && (this._bwMeasureCount % this._runBandwidthTestEvery == 0)) {
+      var i = 0
+
+      var ld = (e) => {
+        if (i > 0) {
+          this._urisToMeasureBandwidth[i-1].end = this._now()
+          clearTimeout(this._urisToMeasureBandwidth[i-1].timer)
+        }
+        if (i >= this._urisToMeasureBandwidth.length || (i > 0 && this._urisToMeasureBandwidth[i-1].expired))
+          done(e)
+        else {
+          var xhr = new XMLHttpRequest()
+          xhr.open('GET', this._urisToMeasureBandwidth[i].url, true)
+          xhr.responseType = 'arraybuffer'
+          xhr.onload = xhr.onabort = ld
+          this._urisToMeasureBandwidth[i].start = this._now()
+          this._urisToMeasureBandwidth[i].timer = setTimeout((j) => {
+            this._urisToMeasureBandwidth[j].expired = true
+            xhr.abort()
+          }, this._urisToMeasureBandwidth[i].timeout, i)
+          xhr.send()
+        }
+        i++
+      }
+
+      var done = (e) => {
+        var timeSpent = (this._urisToMeasureBandwidth[i-1].end - this._urisToMeasureBandwidth[i-1].start) / 1000
+        var bandwidthBps = (e.loaded * 8) / timeSpent
+        var bandwidthKbps = bandwidthBps / 1000
+        this._metrics.extra.bandwidth = bandwidthKbps
+        this._urisToMeasureBandwidth.forEach((x) => {
+          x.start = 0
+          x.end = 0
+          x.expired = false
+          clearTimeout(x.timer)
+        })
+      }
+
+      ld()
+    }
+    this._bwMeasureCount++
   }
 }
