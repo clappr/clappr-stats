@@ -1,7 +1,8 @@
-import {ContainerPlugin, Events} from 'clappr'
+import {ContainerPlugin, Events, Log} from 'clappr'
 import get from 'lodash.get'
 
 const REPORT_EVENT = 'clappr:stats:report'
+const PERCENTAGE_EVENT = 'clappr:stats:percentage'
 
 export default class ClapprStats extends ContainerPlugin {
   get name() { return 'clappr_stats' }
@@ -26,6 +27,11 @@ export default class ClapprStats extends ContainerPlugin {
     this._urisToMeasureBandwidth = get(container, 'options.clapprStats.urisToMeasureBandwidth')
     this._runBandwidthTestEvery = get(container, 'options.clapprStats.runBandwidthTestEvery', 10)
     this._bwMeasureCount = 0
+
+    this._eventsPercentage = {
+      watch: get(container, 'options.clapprStats.eventsPercentage', []),
+      lastCalled: 0
+    }
 
     this._newMetrics()
     this.on(REPORT_EVENT, this._onReport)
@@ -161,6 +167,33 @@ export default class ClapprStats extends ContainerPlugin {
     }
   }
 
+  _callEventPercentage() {
+    if (!this._eventsPercentage || !this._eventsPercentage.watch)
+      return
+
+    let currentPercentage = Math.trunc(this._metrics.extra.watchedPercentage)
+    let allPercentages = this._eventsPercentage.watch
+    let lastCalled = this._eventsPercentage.lastCalled
+
+    for (let index = 0; index < allPercentages.length; index++) {
+      let percentage = allPercentages[index]
+      let nextPercentage = index == allPercentages.length - 1 ? 100 : allPercentages[index + 1]
+      let isCalled = percentage <= lastCalled
+
+      if (currentPercentage < percentage)
+        break
+
+      if (currentPercentage > percentage && currentPercentage > nextPercentage)
+        continue
+
+      if (!isCalled && currentPercentage >= percentage && currentPercentage <= nextPercentage) {
+        Log.info(this.name + ' PERCENTAGE_EVENT: ' + percentage)
+        this._eventsPercentage.lastCalled = percentage
+        this.trigger(PERCENTAGE_EVENT, percentage)
+      }
+    }
+  }
+
   _buildReport() {
     this._stop('session')
     this._start('session')
@@ -175,6 +208,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._measureBandwidth()
 
     this.trigger(REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)))
+    this._callEventPercentage()
   }
 
   _fetchFPS() {
