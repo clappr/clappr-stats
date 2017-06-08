@@ -20,6 +20,9 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
         // optional: callback function.
         // default: console.log
         onReport: (metrics) => {console.log(metrics)},
+        // Fire PERCENTAGE_EVENT when video complete some percentage.
+        // default: []
+        onCompletion: [10, 20, 55, 100],
         // optional: provide an img uri hosted at the same place as your farm
         // or near of it prefferable 1x1px, without caching.
         // default: none

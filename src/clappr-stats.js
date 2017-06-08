@@ -1,8 +1,6 @@
 import {ContainerPlugin, Events, Log} from 'clappr'
 import get from 'lodash.get'
 
-const REPORT_EVENT = 'clappr:stats:report'
-const PERCENTAGE_EVENT = 'clappr:stats:percentage'
 
 export default class ClapprStats extends ContainerPlugin {
   get name() { return 'clappr_stats' }
@@ -28,13 +26,13 @@ export default class ClapprStats extends ContainerPlugin {
     this._runBandwidthTestEvery = get(container, 'options.clapprStats.runBandwidthTestEvery', 10)
     this._bwMeasureCount = 0
 
-    this._eventsPercentage = {
-      watch: get(container, 'options.clapprStats.eventsPercentage', []),
+    this._completion = {
+      watch: get(container, 'options.clapprStats.onCompletion', []),
       lastCalled: 0
     }
 
     this._newMetrics()
-    this.on(REPORT_EVENT, this._onReport)
+    this.on(ClapprStats.REPORT_EVENT, this._onReport)
   }
 
   bindEvents() {
@@ -120,12 +118,15 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._metrics.extra.duration = total
     this._metrics.extra.currentTime = current
+    this._metrics.extra.watchedPercentage = (current / total) * 100
 
     if (l === 0) {
       this._metrics.extra.watchHistory.push([current, current])
     } else {
       this._metrics.extra.watchHistory[l-1][1] = current
     }
+
+    this._onCompletion()
   }
 
   onContainerUpdateWhilePlaying() {
@@ -162,35 +163,20 @@ export default class ClapprStats extends ContainerPlugin {
       extra: {
         playbackName: '', playbackType: '', bitratesHistory: [], bitrateWeightedMean: 0,
         bitrateMostUsed: 0, buffersize: 0, watchHistory: [], watchedPercentage: 0,
-        bufferingPercentage: 0, bandwidth: 0
+        bufferingPercentage: 0, bandwidth: 0, duration: 0, currentTime: 0
       }
     }
   }
 
-  _callEventPercentage() {
-    if (!this._eventsPercentage || !this._eventsPercentage.watch)
-      return
+  _onCompletion() {
+    let currentPercentage = this._metrics.extra.watchedPercentage
+    let allPercentages = this._completion.watch
+    let isCalled = currentPercentage <= this._completion.lastCalled
 
-    let currentPercentage = Math.trunc(this._metrics.extra.watchedPercentage)
-    let allPercentages = this._eventsPercentage.watch
-    let lastCalled = this._eventsPercentage.lastCalled
-
-    for (let index = 0; index < allPercentages.length; index++) {
-      let percentage = allPercentages[index]
-      let nextPercentage = index == allPercentages.length - 1 ? 100 : allPercentages[index + 1]
-      let isCalled = percentage <= lastCalled
-
-      if (currentPercentage < percentage)
-        break
-
-      if (currentPercentage > percentage && currentPercentage > nextPercentage)
-        continue
-
-      if (!isCalled && currentPercentage >= percentage && currentPercentage <= nextPercentage) {
-        Log.info(this.name + ' PERCENTAGE_EVENT: ' + percentage)
-        this._eventsPercentage.lastCalled = percentage
-        this.trigger(PERCENTAGE_EVENT, percentage)
-      }
+    if (allPercentages.indexOf(currentPercentage) != -1 && !isCalled) {
+      Log.info(this.name + ' PERCENTAGE_EVENT: ' + currentPercentage)
+      this._completion.lastCalled = currentPercentage
+      this.trigger(ClapprStats.PERCENTAGE_EVENT, currentPercentage)      
     }
   }
 
@@ -207,8 +193,7 @@ export default class ClapprStats extends ContainerPlugin {
     this._measureLatency()
     this._measureBandwidth()
 
-    this.trigger(REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)))
-    this._callEventPercentage()
+    this.trigger(ClapprStats.REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)))
   }
 
   _fetchFPS() {
@@ -236,7 +221,6 @@ export default class ClapprStats extends ContainerPlugin {
 
   _calculatePercentages() {
      if (this._metrics.extra.duration > 0) {
-       this._metrics.extra.watchedPercentage = (this._metrics.timers.watch / this._metrics.extra.duration) * 100
        this._metrics.extra.bufferingPercentage = (this._metrics.timers.buffering / this._metrics.extra.duration) * 100
      }
   }
@@ -322,3 +306,6 @@ export default class ClapprStats extends ContainerPlugin {
     this._bwMeasureCount++
   }
 }
+
+ClapprStats.REPORT_EVENT = 'clappr:stats:report'
+ClapprStats.PERCENTAGE_EVENT = 'clappr:stats:percentage'

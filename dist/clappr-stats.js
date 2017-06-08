@@ -1071,9 +1071,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var REPORT_EVENT = 'clappr:stats:report';
-var PERCENTAGE_EVENT = 'clappr:stats:percentage';
-
 var ClapprStats = function (_ContainerPlugin) {
   _inherits(ClapprStats, _ContainerPlugin);
 
@@ -1138,13 +1135,13 @@ var ClapprStats = function (_ContainerPlugin) {
     _this._runBandwidthTestEvery = (0, _lodash2.default)(container, 'options.clapprStats.runBandwidthTestEvery', 10);
     _this._bwMeasureCount = 0;
 
-    _this._eventsPercentage = {
-      watch: (0, _lodash2.default)(container, 'options.clapprStats.eventsPercentage', []),
+    _this._completion = {
+      watch: (0, _lodash2.default)(container, 'options.clapprStats.onCompletion', []),
       lastCalled: 0
     };
 
     _this._newMetrics();
-    _this.on(REPORT_EVENT, _this._onReport);
+    _this.on(ClapprStats.REPORT_EVENT, _this._onReport);
     return _this;
   }
 
@@ -1250,12 +1247,15 @@ var ClapprStats = function (_ContainerPlugin) {
 
       this._metrics.extra.duration = total;
       this._metrics.extra.currentTime = current;
+      this._metrics.extra.watchedPercentage = current / total * 100;
 
       if (l === 0) {
         this._metrics.extra.watchHistory.push([current, current]);
       } else {
         this._metrics.extra.watchHistory[l - 1][1] = current;
       }
+
+      this._onCompletion();
     }
   }, {
     key: 'onContainerUpdateWhilePlaying',
@@ -1297,33 +1297,21 @@ var ClapprStats = function (_ContainerPlugin) {
         extra: {
           playbackName: '', playbackType: '', bitratesHistory: [], bitrateWeightedMean: 0,
           bitrateMostUsed: 0, buffersize: 0, watchHistory: [], watchedPercentage: 0,
-          bufferingPercentage: 0, bandwidth: 0
+          bufferingPercentage: 0, bandwidth: 0, duration: 0, currentTime: 0
         }
       };
     }
   }, {
-    key: '_callEventPercentage',
-    value: function _callEventPercentage() {
-      if (!this._eventsPercentage || !this._eventsPercentage.watch) return;
+    key: '_onCompletion',
+    value: function _onCompletion() {
+      var currentPercentage = this._metrics.extra.watchedPercentage;
+      var allPercentages = this._completion.watch;
+      var isCalled = currentPercentage <= this._completion.lastCalled;
 
-      var currentPercentage = Math.trunc(this._metrics.extra.watchedPercentage);
-      var allPercentages = this._eventsPercentage.watch;
-      var lastCalled = this._eventsPercentage.lastCalled;
-
-      for (var index = 0; index < allPercentages.length; index++) {
-        var percentage = allPercentages[index];
-        var nextPercentage = index == allPercentages.length - 1 ? 100 : allPercentages[index + 1];
-        var isCalled = percentage <= lastCalled;
-
-        if (currentPercentage < percentage) break;
-
-        if (currentPercentage > percentage && currentPercentage > nextPercentage) continue;
-
-        if (!isCalled && currentPercentage >= percentage && currentPercentage <= nextPercentage) {
-          _clappr.Log.info(this.name + ' PERCENTAGE_EVENT: ' + percentage);
-          this._eventsPercentage.lastCalled = percentage;
-          this.trigger(PERCENTAGE_EVENT, percentage);
-        }
+      if (allPercentages.indexOf(currentPercentage) != -1 && !isCalled) {
+        _clappr.Log.info(this.name + ' PERCENTAGE_EVENT: ' + currentPercentage);
+        this._completion.lastCalled = currentPercentage;
+        this.trigger(ClapprStats.PERCENTAGE_EVENT, currentPercentage);
       }
     }
   }, {
@@ -1341,8 +1329,7 @@ var ClapprStats = function (_ContainerPlugin) {
       this._measureLatency();
       this._measureBandwidth();
 
-      this.trigger(REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)));
-      this._callEventPercentage();
+      this.trigger(ClapprStats.REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)));
     }
   }, {
     key: '_fetchFPS',
@@ -1379,7 +1366,6 @@ var ClapprStats = function (_ContainerPlugin) {
     key: '_calculatePercentages',
     value: function _calculatePercentages() {
       if (this._metrics.extra.duration > 0) {
-        this._metrics.extra.watchedPercentage = this._metrics.timers.watch / this._metrics.extra.duration * 100;
         this._metrics.extra.bufferingPercentage = this._metrics.timers.buffering / this._metrics.extra.duration * 100;
       }
     }
@@ -1478,6 +1464,10 @@ var ClapprStats = function (_ContainerPlugin) {
 }(_clappr.ContainerPlugin);
 
 exports.default = ClapprStats;
+
+
+ClapprStats.REPORT_EVENT = 'clappr:stats:report';
+ClapprStats.PERCENTAGE_EVENT = 'clappr:stats:percentage';
 module.exports = exports['default'];
 
 /***/ })
