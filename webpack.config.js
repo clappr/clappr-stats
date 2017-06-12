@@ -1,8 +1,7 @@
 var path = require('path');
-var webpack = require('webpack');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'index.js'),
+  entry: path.resolve(__dirname, 'src/clappr-stats.js'),
   externals: {
     clappr: 'Clappr'
   },
@@ -10,18 +9,16 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel',
-        query: {
-            compact: true,
-        }
+        loader: 'babel-loader'
       }
     ],
   },
   resolve: {
-    extensions: ['', '.js'],
+    extensions: ['.js']
   },
   output: {
-    filename: 'clappr-stats.min.js',
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'clappr-stats.js',
     library: 'ClapprStats',
     libraryTarget: 'umd',
   },
