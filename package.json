@@ -1,6 +1,6 @@
 {
   "name": "clappr-stats",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "clappr playback stats report plugin",
   "main": "src/clappr-stats.js",
   "repository": {
