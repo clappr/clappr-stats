@@ -126,6 +126,13 @@ export default class ClapprStats extends ContainerPlugin {
       this._metrics.extra.watchHistory[l-1][1] = current
     }
 
+    if (this._metrics.extra.bitratesHistory.length > 0) {
+      var lastBitrate = this._metrics.extra.bitratesHistory[this._metrics.extra.bitratesHistory.length-1]
+      if (!lastBitrate.end) {
+        lastBitrate.time = this._now() - lastBitrate.start
+      }
+    }
+
     this._onCompletion()
   }
 
@@ -176,7 +183,7 @@ export default class ClapprStats extends ContainerPlugin {
     if (allPercentages.indexOf(currentPercentage) != -1 && !isCalled) {
       Log.info(this.name + ' PERCENTAGE_EVENT: ' + currentPercentage)
       this._completion.lastCalled = currentPercentage
-      this.trigger(ClapprStats.PERCENTAGE_EVENT, currentPercentage)      
+      this.trigger(ClapprStats.PERCENTAGE_EVENT, currentPercentage)
     }
   }
 
@@ -209,14 +216,11 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _calculateBitrates() {
-    var bitratesWatchedTime = 0
     this._metrics.extra.bitrateWeightedMean = this._metrics.extra.bitratesHistory.map((x) => {
-      bitratesWatchedTime += x.time || 0
-      var bitrateTime = x.time || (this._metrics.timers.watch - bitratesWatchedTime)
-      return x.bitrate * bitrateTime
+      return x.bitrate * x.time
     }).reduce((a,b) => a + b, 0) / this._metrics.timers.watch
 
-    this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.sort((a,b) => a.time < b.time)[0]
+    this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.slice().sort((a,b) => a.time < b.time)[0]
   }
 
   _calculatePercentages() {
