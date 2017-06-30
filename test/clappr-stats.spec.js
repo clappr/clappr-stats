@@ -72,6 +72,16 @@ describe('Clappr Stats', () => {
         expect(percentage).to.be.equal(25)
     })
 
+    it('call PERCENTAGE_EVENT if video start in middle time and make seek for past', () => {
+        this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
+
+        this.simulator.play(10)
+        assert.isOk(this.callback.calledOnce)
+
+        this.simulator.play(4)
+        assert.isOk(this.callback.calledTwice)
+    })
+
     it('call PERCENTAGE_EVENT once with the same state', () => {
         this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
         
