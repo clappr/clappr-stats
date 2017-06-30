@@ -45,7 +45,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call REPORT_EVENT every time interval', () => {
-        this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
+        this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
         let attempts = randomNumber()
 
         this.simulator.play()
@@ -63,7 +63,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call PERCENTAGE_EVENT when PLAYBACK_TIMEUPDATE event is fired', () => {
-        this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
+        this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
 
         this.simulator.play(10)
 
@@ -73,7 +73,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call PERCENTAGE_EVENT if video start in middle time and make seek for past', () => {
-        this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
+        this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
 
         this.simulator.play(10)
         assert.isOk(this.callback.calledOnce)
@@ -83,7 +83,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call PERCENTAGE_EVENT once with the same state', () => {
-        this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
+        this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
         
         this.simulator.play(4)
         assert.isOk(this.callback.calledOnce)
@@ -116,7 +116,7 @@ describe('Clappr Stats', () => {
     })
 
     it('should update counters', () => {
-        this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
+        this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
         
         this.simulator.play()
         this.simulator.enableFullscreen()
@@ -138,7 +138,7 @@ describe('Clappr Stats', () => {
     })
 
     it('should update timer', () => {
-        this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
+        this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
         
         this.simulator.play()
         this.clock.tick(this.timeInterval)

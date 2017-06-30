@@ -185,7 +185,7 @@ export default class ClapprStats extends ContainerPlugin {
     if (allPercentages.indexOf(currentPercentage) != -1 && !isCalled) {
       Log.info(this.name + ' PERCENTAGE_EVENT: ' + currentPercentage)
       this._completion.calls.push(currentPercentage)
-      this.trigger(ClapprStats.PERCENTAGE_EVENT, currentPercentage)
+      this.container.trigger(ClapprStats.PERCENTAGE_EVENT, currentPercentage)
     }
   }
 
@@ -202,7 +202,9 @@ export default class ClapprStats extends ContainerPlugin {
     this._measureLatency()
     this._measureBandwidth()
 
-    this.trigger(ClapprStats.REPORT_EVENT, JSON.parse(JSON.stringify(this._metrics)))
+    let data = JSON.parse(JSON.stringify(this._metrics))
+    this.container.trigger(ClapprStats.REPORT_EVENT, data)
+    this.trigger(ClapprStats.REPORT_EVENT, data)
   }
 
   _fetchFPS() {
