@@ -28,7 +28,7 @@ export default class ClapprStats extends ContainerPlugin {
 
     this._completion = {
       watch: get(container, 'options.clapprStats.onCompletion', []),
-      lastCalled: 0
+      calls: []
     }
 
     this._newMetrics()
@@ -178,11 +178,11 @@ export default class ClapprStats extends ContainerPlugin {
   _onCompletion() {
     let currentPercentage = this._metrics.extra.watchedPercentage
     let allPercentages = this._completion.watch
-    let isCalled = currentPercentage <= this._completion.lastCalled
+    let isCalled = this._completion.calls.indexOf(currentPercentage) != -1
 
     if (allPercentages.indexOf(currentPercentage) != -1 && !isCalled) {
       Log.info(this.name + ' PERCENTAGE_EVENT: ' + currentPercentage)
-      this._completion.lastCalled = currentPercentage
+      this._completion.calls.push(currentPercentage)
       this.trigger(ClapprStats.PERCENTAGE_EVENT, currentPercentage)
     }
   }
