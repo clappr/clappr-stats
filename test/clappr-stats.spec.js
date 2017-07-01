@@ -10,6 +10,13 @@ const randomNumber = (max=20, min=5) => {
     return Math.trunc(number)
 }
 
+const calculateFloatTime = (percentage, total=40) => {
+    // Clappr-Stats will calculate the watched percentage in milliseconds.
+    total = total * 1000
+    let time = (percentage / 100) * total
+    return time / 1000
+}
+
 describe('Clappr Stats', () => {
 
     before(() => {
@@ -65,7 +72,7 @@ describe('Clappr Stats', () => {
     it('call PERCENTAGE_EVENT when PLAYBACK_TIMEUPDATE event is fired', () => {
         this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
 
-        this.simulator.play(10)
+        this.simulator.play(calculateFloatTime(25.22))
 
         let percentage = this.callback.getCall(0).args[0]
 
@@ -75,20 +82,23 @@ describe('Clappr Stats', () => {
     it('call PERCENTAGE_EVENT if video start in middle time and make seek for past', () => {
         this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
 
-        this.simulator.play(10)
+        this.simulator.play(calculateFloatTime(25.55))
         assert.isOk(this.callback.calledOnce)
 
-        this.simulator.play(4)
+        this.simulator.play(calculateFloatTime(10.01))
         assert.isOk(this.callback.calledTwice)
+
+        this.simulator.play(calculateFloatTime(100.99))
+        assert.isOk(this.callback.calledThrice)
     })
 
     it('call PERCENTAGE_EVENT once with the same state', () => {
         this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
-        
-        this.simulator.play(4)
+
+        this.simulator.play(calculateFloatTime(10.1))
         assert.isOk(this.callback.calledOnce)
 
-        this.simulator.play(4)
+        this.simulator.play(calculateFloatTime(10.99))
         assert.isOk(this.callback.calledOnce)
     })
 
@@ -117,7 +127,7 @@ describe('Clappr Stats', () => {
 
     it('should update counters', () => {
         this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
-        
+
         this.simulator.play()
         this.simulator.enableFullscreen()
         this.simulator.pause()
@@ -139,7 +149,7 @@ describe('Clappr Stats', () => {
 
     it('should update timer', () => {
         this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
-        
+
         this.simulator.play()
         this.clock.tick(this.timeInterval)
 

@@ -178,7 +178,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _onCompletion() {
-    let currentPercentage = this._metrics.extra.watchedPercentage
+    let currentPercentage = Math.trunc(this._metrics.extra.watchedPercentage)
     let allPercentages = this._completion.watch
     let isCalled = this._completion.calls.indexOf(currentPercentage) != -1
 
