@@ -220,7 +220,9 @@ export default class ClapprStats extends ContainerPlugin {
       return x.bitrate * x.time
     }).reduce((a,b) => a + b, 0) / this._metrics.timers.watch
 
-    this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.slice().sort((a,b) => a.time < b.time)[0]
+    if (this._metrics.extra.bitratesHistory.length > 0) {
+      this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.slice().sort((a,b) => a.time < b.time)[0].bitrate
+    }
   }
 
   _calculatePercentages() {
