@@ -216,9 +216,10 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _calculateBitrates() {
+    var totalTime = this._metrics.extra.bitratesHistory.map((x) => x.time).reduce((a,b) => a + b, 0)
     this._metrics.extra.bitrateWeightedMean = this._metrics.extra.bitratesHistory.map((x) => {
       return x.bitrate * x.time
-    }).reduce((a,b) => a + b, 0) / this._metrics.timers.watch
+    }).reduce((a,b) => a + b, 0) / totalTime
 
     if (this._metrics.extra.bitratesHistory.length > 0) {
       this._metrics.extra.bitrateMostUsed = this._metrics.extra.bitratesHistory.slice().sort((a,b) => a.time < b.time)[0].bitrate
