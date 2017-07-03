@@ -58,7 +58,7 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
     changeLevel: 0, // number of adaptative bitrate changes
     seek: 0, // number of seeks
     fullscreen: 0, // number of times that user went to fullscreen
-    dvrUsage: 0 // number of time taht user used dvr seek (at live stream)
+    dvrUsage: 0 // number of time that user used dvr seek (at live stream)
   },
   timers: {
     startup: 0, // time (ms) since user click/touch play (intent to play) to the play
@@ -75,8 +75,8 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
     duration: 0, // duration time in ms
     currentTime: 0, // current time in ms
     bitratesHistory: [], // the bitrates changes history
-    bitrateWeightedMean: 0, // bitrate weighted mean (kbps)
-    bitrateMostUsed: 0, // most used (based on time) bitrate  (kbps)
+    bitrateWeightedMean: 0, // bitrate weighted mean (bps)
+    bitrateMostUsed: 0, // most used (based on time) bitrate (bps)
     watchHistory: [], // an array of an array of watched range time ex: [0, 2200]
     watchedPercentage: 0, // % of watched time
     bufferingPercentage: 0, // % of buffering time
