@@ -298,8 +298,7 @@ export default class ClapprStats extends ContainerPlugin {
       var done = (e) => {
         var timeSpent = (this._urisToMeasureBandwidth[i-1].end - this._urisToMeasureBandwidth[i-1].start) / 1000
         var bandwidthBps = (e.loaded * 8) / timeSpent
-        var bandwidthKbps = bandwidthBps / 1000
-        this._metrics.extra.bandwidth = bandwidthKbps
+        this._metrics.extra.bandwidth = bandwidthBps
         this._urisToMeasureBandwidth.forEach((x) => {
           x.start = 0
           x.end = 0

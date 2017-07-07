@@ -80,7 +80,7 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
     watchHistory: [], // an array of an array of watched range time ex: [0, 2200]
     watchedPercentage: 0, // % of watched time
     bufferingPercentage: 0, // % of buffering time
-    bandwidth: 0, // bandwidth in kbps
+    bandwidth: 0, // user bandwidth (bps)
   }
 }
 ```
