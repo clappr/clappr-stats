@@ -92,6 +92,29 @@ describe('Clappr Stats', () => {
         assert.isOk(this.callback.calledOnce)
     })
 
+    it('does not update time watch in this events sequence [BUG]', () => {
+        let counter = 0
+        let originalMethod = window.performance.now
+        window.performance.now = () => { return counter++ }
+
+        let container = this.simulator.container
+        this.simulator.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
+
+        container.play()
+        container.playing()
+        container.timeUpdated({current: 50})
+
+        container.paused()
+        container.timeUpdated({current: 80})
+        container.pause()
+
+        this.clock.tick(this.timeInterval)
+        let watch = this.callback.getCall(0).args[0].timers.watch
+
+        expect(watch).to.be.equal(3)
+        window.performance.now = originalMethod
+    })
+
     it('should update counters', () => {
         this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
         
