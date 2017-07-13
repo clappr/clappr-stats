@@ -18,7 +18,7 @@
   "author": "leandro.ribeiro.moreira@gmail.com",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "clappr": "^0.2.66",
+    "clappr": "^0.2.68",
     "lodash.get": "^4.3.0"
   },
   "devDependencies": {

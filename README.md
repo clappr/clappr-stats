@@ -7,6 +7,13 @@ You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clapp
 
 Clappr-stats use Math.trunc method to fire percentage event, this method is not supported by Internet Explorer, please use a [polyfill](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Math/trunc) to make compatible with IE.
 
+Clappr-stats will register two events CLAPPR_STATS_REPORT and CLAPPR_STATS_PERCENTAGE, those events can be listen this way:
+
+```javascript
+this.listenTo(this.container, Events.CLAPPR_STATS_REPORT, callback)
+this.listenTo(this.container, Events.CLAPPR_STATS_PERCENTAGE, callback)
+```
+
 ```html
 <script>
     var player = new Clappr.Player({
@@ -19,9 +26,6 @@ Clappr-stats use Math.trunc method to fire percentage event, this method is not 
         // optional: time in miliseconds for each report.
         // default: 5000
         runEach: 5000,
-        // optional: callback function.
-        // default: console.log
-        onReport: (metrics) => {console.log(metrics)},
         // Fire PERCENTAGE_EVENT when video complete some percentage.
         // default: []
         onCompletion: [10, 20, 55, 100],

@@ -2,6 +2,7 @@ import { expect, assert } from 'chai'
 
 import ClapprStats from '../src/clappr-stats'
 import { PlayerSimulator } from './util'
+import { Events } from 'clappr'
 
 import sinon from 'sinon'
 
@@ -41,7 +42,6 @@ describe('Clappr Stats', () => {
         }
 
         this.simulator = new PlayerSimulator(this.options, ClapprStats)
-        this.plugin = this.simulator.plugin
     })
 
     it('call callbackOption when REPORT_EVENT is fired', () => {
@@ -52,7 +52,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call REPORT_EVENT every time interval', () => {
-        this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
+        this.simulator.container.on(Events.CLAPPR_STATS_REPORT, this.callback)
         let attempts = randomNumber()
 
         this.simulator.play()
@@ -70,7 +70,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call PERCENTAGE_EVENT when PLAYBACK_TIMEUPDATE event is fired', () => {
-        this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
+        this.simulator.container.on(Events.CLAPPR_STATS_PERCENTAGE, this.callback)
 
         this.simulator.play(calculateFloatTime(25.22))
 
@@ -80,7 +80,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call PERCENTAGE_EVENT if video start in middle time and make seek for past', () => {
-        this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
+        this.simulator.container.on(Events.CLAPPR_STATS_PERCENTAGE, this.callback)
 
         this.simulator.play(calculateFloatTime(25.55))
         assert.isOk(this.callback.calledOnce)
@@ -93,7 +93,7 @@ describe('Clappr Stats', () => {
     })
 
     it('call PERCENTAGE_EVENT once with the same state', () => {
-        this.plugin.container.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
+        this.simulator.container.on(Events.CLAPPR_STATS_PERCENTAGE, this.callback)
 
         this.simulator.play(calculateFloatTime(10.1))
         assert.isOk(this.callback.calledOnce)
@@ -126,7 +126,7 @@ describe('Clappr Stats', () => {
     })
 
     it('should update counters', () => {
-        this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
+        this.simulator.container.on(Events.CLAPPR_STATS_REPORT, this.callback)
 
         this.simulator.play()
         this.simulator.enableFullscreen()
@@ -148,7 +148,7 @@ describe('Clappr Stats', () => {
     })
 
     it('should update timer', () => {
-        this.plugin.container.on(ClapprStats.REPORT_EVENT, this.callback)
+        this.simulator.container.on(Events.CLAPPR_STATS_REPORT, this.callback)
 
         this.simulator.play()
         this.clock.tick(this.timeInterval)
