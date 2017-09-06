@@ -3,7 +3,7 @@
 
 # Usage
 
-You can use it from JSDelivr `https://cdn.jsdelivr.net/clappr.stats/latest/clappr-stats.min.js` or as a npm package.
+You can use it from JSDelivr `https://cdn.jsdelivr.net/npm/clappr-stats@latest/dist/clappr-stats.min.js` or as a npm package.
 
 ```html
 <script>
