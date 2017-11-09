@@ -18,8 +18,10 @@
   "author": "leandro.ribeiro.moreira@gmail.com",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "clappr": "^0.2.66",
     "lodash.get": "^4.3.0"
+  },
+  "peerDependencies": {
+    "clappr": "^0.2.66"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
@@ -27,6 +29,7 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015": "^6.24.1",
     "chai": "^4.0.2",
+    "clappr": "^0.2.66",
     "karma": "^1.7.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^2.1.1",
