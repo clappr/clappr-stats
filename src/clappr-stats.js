@@ -52,6 +52,11 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container.playback, Events.PLAYBACK_TIMEUPDATE, this.onTimeUpdate)
   }
 
+  destroy() {
+    this.stopReporting()
+    super.destroy()
+  }
+
   onBitrate(newBitrate) {
     var bitrate = parseInt(get(newBitrate, 'bitrate', 0), 10)
     var now = this._now()
