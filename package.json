@@ -11,7 +11,7 @@
     "test": "karma start --single-run",
     "test_watch": "karma start",
     "watch": "webpack --progress --watch",
-    "start": "webpack-dev-server --host 0.0.0.0 --content-base public/ --output-public-path latest/ --hot",
+    "start": "webpack-dev-server",
     "build": "webpack",
     "release": "webpack --progress --optimize-minimize --output-filename clappr-stats.min.js"
   },

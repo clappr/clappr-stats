@@ -1,3 +1,4 @@
+var webpack = require('webpack');
 var path = require('path');
 
 module.exports = {
@@ -16,10 +17,21 @@ module.exports = {
   resolve: {
     extensions: ['.js']
   },
+  plugins: [
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin()
+  ],
   output: {
     path: path.resolve(__dirname, 'dist'),
+    publicPath: 'latest/',
     filename: 'clappr-stats.js',
     library: 'ClapprStats',
     libraryTarget: 'umd',
   },
+  devServer: {
+    contentBase: 'public/',
+    host: '0.0.0.0',
+    disableHostCheck: true,
+    hot: true
+  }
 };
