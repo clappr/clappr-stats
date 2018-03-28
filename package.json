@@ -8,12 +8,12 @@
     "url": "git@github.com:leandromoreira/clappr-stats.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/karma start --single-run",
-    "test_watch": "node_modules/.bin/karma start",
-    "watch": "node_modules/.bin/webpack --progress --watch",
-    "start": "node_modules/.bin/webpack-dev-server --host 0.0.0.0 --content-base public/ --output-public-path latest/ --hot",
-    "build": "node_modules/.bin/webpack",
-    "release": "node_modules/.bin/webpack && node_modules/.bin/webpack --progress --optimize-minimize --output-filename clappr-stats.min.js"
+    "test": "karma start --single-run",
+    "test_watch": "karma start",
+    "watch": "webpack --progress --watch",
+    "start": "webpack-dev-server --host 0.0.0.0 --content-base public/ --output-public-path latest/ --hot",
+    "build": "webpack",
+    "release": "webpack --progress --optimize-minimize --output-filename clappr-stats.min.js"
   },
   "browser": {
     "Clappr": "clappr"
