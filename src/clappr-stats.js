@@ -234,10 +234,15 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _calculatePercentages() {
-     if (this._metrics.extra.duration > 0) {
-       this._metrics.extra.bufferingPercentage = (this._metrics.timers.buffering / this._metrics.extra.duration) * 100
-     }
-  }
+    if(isNaN(this._metrics.extra.buffersize)){
+       this._metrics.extra.bufferingPercentage = NaN
+       return;
+    }
+
+    if (this._metrics.extra.duration > 0) {
+      this._metrics.extra.bufferingPercentage = (this._metrics.extra.buffersize / this._metrics.extra.duration) * 100
+    }
+ }
 
   _html5FetchFPS() {
     const videoTag = this.container.playback.el

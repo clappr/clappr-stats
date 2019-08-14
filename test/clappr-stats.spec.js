@@ -1,5 +1,5 @@
 import { expect, assert } from 'chai'
-
+import { Container, Playback } from 'clappr'
 import ClapprStats from '../src/clappr-stats'
 import { PlayerSimulator } from './util'
 
@@ -148,5 +148,42 @@ describe('Clappr Stats', () => {
         expect(metrics.timers.startup).to.be.an('number')
         expect(metrics.timers.watch).to.be.an('number')
         expect(metrics.timers.session).to.be.an('number')
+    })
+
+    describe(' _calculatePercentages', () => {
+      let pluginStats
+  
+      before(function() {
+        const container = new Container({ playback: new Playback() })
+        pluginStats = new ClapprStats(container)
+        container.addPlugin(pluginStats)
+      })
+  
+      it(' when buffersize prop is not available retuns NaN', () => {
+        //given
+        pluginStats._metrics.extra.duration = 234
+        pluginStats._metrics.extra.buffersize = NaN
+  
+        //when
+        pluginStats._calculatePercentages()
+  
+        //then
+        expect(pluginStats._metrics.extra.bufferingPercentage).to.be.NaN
+      })
+  
+      it(' when buffersize prop is available retuns value', () => {
+        //given
+        pluginStats._metrics.extra.duration = 234
+        pluginStats._metrics.extra.buffersize = 117
+        const expectReturn = 50
+  
+        //when
+        pluginStats._calculatePercentages()
+  
+        //then
+        expect(pluginStats._metrics.extra.bufferingPercentage).to.be.equal(
+          expectReturn
+        )
+      })
     })
 })
