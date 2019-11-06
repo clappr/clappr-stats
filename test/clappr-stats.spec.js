@@ -84,40 +84,17 @@ describe('Clappr Stats', () => {
 
     it('call PERCENTAGE_EVENT once with the same state', () => {
         this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
-        
-        this.simulator.play(4)
-        assert.isOk(this.callback.calledOnce)
 
         this.simulator.play(4)
         assert.isOk(this.callback.calledOnce)
-    })
 
-    it('does not update time watch in this events sequence [BUG]', () => {
-        let counter = 0
-        let originalMethod = window.performance.now
-        window.performance.now = () => { return counter++ }
-
-        let container = this.simulator.container
-        this.simulator.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
-
-        container.play()
-        container.playing()
-        container.timeUpdated({current: 50})
-
-        container.paused()
-        container.timeUpdated({current: 80})
-        container.pause()
-
-        this.clock.tick(this.timeInterval)
-        let watch = this.callback.getCall(0).args[0].timers.watch
-
-        expect(watch).to.be.equal(3)
-        window.performance.now = originalMethod
+        this.simulator.play(4)
+        assert.isOk(this.callback.calledOnce)
     })
 
     it('should update counters', () => {
         this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
-        
+
         this.simulator.play()
         this.simulator.enableFullscreen()
         this.simulator.pause()
@@ -139,7 +116,7 @@ describe('Clappr Stats', () => {
 
     it('should update timer', () => {
         this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
-        
+
         this.simulator.play()
         this.clock.tick(this.timeInterval)
 
