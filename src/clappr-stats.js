@@ -120,8 +120,8 @@ export default class ClapprStats extends ContainerPlugin {
 
   onTimeUpdate(e) {
     var current = e.current * 1000,
-        total = e.total * 1000,
-        l = this._metrics.extra.watchHistory.length
+      total = e.total * 1000,
+      l = this._metrics.extra.watchHistory.length
 
     this._metrics.extra.duration = total
     this._metrics.extra.currentTime = current
@@ -234,9 +234,9 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _calculatePercentages() {
-     if (this._metrics.extra.duration > 0) {
-       this._metrics.extra.bufferingPercentage = (this._metrics.timers.buffering / this._metrics.extra.duration) * 100
-     }
+    if (this._metrics.extra.duration > 0) {
+      this._metrics.extra.bufferingPercentage = (this._metrics.timers.buffering / this._metrics.extra.duration) * 100
+    }
   }
 
   _html5FetchFPS() {
