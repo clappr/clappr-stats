@@ -1,4 +1,4 @@
-import { HTML5Video, Container, Events } from 'clappr'
+import { HTML5Video, Container, Events } from '@clappr/core'
 
 
 class PlayerSimulator {
@@ -14,7 +14,7 @@ class PlayerSimulator {
   play(time=2, total=40) {
     this.container.play()
     this.container.onBuffering()
-    this.container.progress({current: 50})
+    this.container.onProgress({current: 50})
     this.container.playing()
     this.container.updateBitrate(480)
     this.playback.trigger(Events.PLAYBACK_TIMEUPDATE, {current: time, total: total})
