@@ -1,5 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
+const DirectoryNamedWebpackPlugin = require('directory-named-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const minimize = !!process.env.MINIMIZE
@@ -24,11 +25,12 @@ const webpackConfig = (config) => {
       ],
     },
     resolve: {
+      plugins: [
+        new DirectoryNamedWebpackPlugin(true),
+      ],
       extensions: ['.js']
     },
     plugins: [
-      new webpack.NamedModulesPlugin(),
-      new webpack.HotModuleReplacementPlugin(),
       ...(config.plugins || [])
     ],
     optimization: config.optimization,

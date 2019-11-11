@@ -1,5 +1,11 @@
 // Karma configuration
 // Generated on Tue Jun 06 2017 21:11:25 GMT-0300 (-03)
+const webpackConfig = require('./webpack.config')
+
+const webpackTestConfig = Object.assign({}, webpackConfig[0])
+webpackTestConfig.entry = null
+webpackTestConfig.externals = {}
+// webpackTestConfig.output.filename = '[name].js'
 
 module.exports = function(config) {
   config.set({
@@ -14,17 +20,16 @@ module.exports = function(config) {
     frameworks: ['mocha', 'chai', 'sinon'],
 
     plugins: [
-        'karma-webpack',
-        'karma-chrome-launcher',
-        'karma-mocha',
-        'karma-chai',
-        'karma-sinon'
+      'karma-webpack',
+      'karma-chrome-launcher',
+      'karma-mocha',
+      'karma-chai',
+      'karma-sinon'
     ],
 
     // list of files / patterns to load in the browser
     files: [
       'test/*.spec.js',
-      'src/*.js'
     ],
 
 
@@ -32,12 +37,14 @@ module.exports = function(config) {
     exclude: [
     ],
 
+    webpack: webpackTestConfig,
+
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "test/*.spec.js": ["webpack"],
-      "src/*.js": ["webpack"]
+      'test/*.spec.js': ['webpack'],
+      'src/*.js': ['webpack']
     },
 
 
