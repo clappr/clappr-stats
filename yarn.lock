@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@clappr/core@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@clappr/core/-/core-0.4.2.tgz#a65834372ed7fbace1d7cc981962448a74575e62"
+  integrity sha512-m5roVFV4jOnSbS76EMd+e64+SAzl5KvcX9SifRvosaHtu0HDtXorlwtXril4P1J7MB/+HGf7bfHIazfDIhtzew==
+
 "@sinonjs/formatio@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@sinonjs/formatio/-/formatio-2.0.0.tgz#84db7e9eb5531df18a8c5e0bfb6e449e55e654b2"
@@ -1672,10 +1677,6 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
 circular-json@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/circular-json/-/circular-json-0.5.1.tgz#b8942a09e535863dc21b04417a91971e1d9cd91f"
-
-clappr@^0.2.66:
-  version "0.2.77"
-  resolved "https://registry.yarnpkg.com/clappr/-/clappr-0.2.77.tgz#f2e2941843375aa438b26e19f660ac550e8abca7"
 
 class-utils@^0.3.5:
   version "0.3.6"
