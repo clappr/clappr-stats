@@ -10,18 +10,18 @@ const randomNumber = (max=20, min=5) => {
     return Math.trunc(number)
 }
 
-describe('Clappr Stats', () => {
+describe('Clappr Stats', function() {
 
-    before(() => {
+    before(function() {
         this.timeInterval = 100
         this.clock = sinon.useFakeTimers(Date.now())
     })
 
-    after(() => {
+    after(function() {
         this.clock.restore()
     })
 
-    beforeEach(() => {
+    beforeEach(function() {
         this.callback = sinon.spy()
         this.callbackOptions = sinon.spy()
         this.options = {
@@ -37,14 +37,14 @@ describe('Clappr Stats', () => {
         this.plugin = this.simulator.plugin
     })
 
-    it('call callbackOption when REPORT_EVENT is fired', () => {
+    it('call callbackOption when REPORT_EVENT is fired', function() {
         this.simulator.play()
         this.clock.tick(this.timeInterval)
 
         assert.isOk(this.callbackOptions.called)
     })
 
-    it('call REPORT_EVENT every time interval', () => {
+    it('call REPORT_EVENT every time interval', function() {
         this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
         let attempts = randomNumber()
 
@@ -62,7 +62,7 @@ describe('Clappr Stats', () => {
         }
     })
 
-    it('call PERCENTAGE_EVENT when PLAYBACK_TIMEUPDATE event is fired', () => {
+    it('call PERCENTAGE_EVENT when PLAYBACK_TIMEUPDATE event is fired', function() {
         this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
 
         this.simulator.play(10)
@@ -72,7 +72,7 @@ describe('Clappr Stats', () => {
         expect(percentage).to.be.equal(25)
     })
 
-    it('call PERCENTAGE_EVENT if video start in middle time and make seek for past', () => {
+    it('call PERCENTAGE_EVENT if video start in middle time and make seek for past', function() {
         this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
 
         this.simulator.play(10)
@@ -82,7 +82,7 @@ describe('Clappr Stats', () => {
         assert.isOk(this.callback.calledTwice)
     })
 
-    it('call PERCENTAGE_EVENT once with the same state', () => {
+    it('call PERCENTAGE_EVENT once with the same state', function() {
         this.plugin.on(ClapprStats.PERCENTAGE_EVENT, this.callback)
 
         this.simulator.play(4)
@@ -92,7 +92,7 @@ describe('Clappr Stats', () => {
         assert.isOk(this.callback.calledOnce)
     })
 
-    it('should update counters', () => {
+    it('should update counters', function() {
         this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
 
         this.simulator.play()
@@ -114,7 +114,7 @@ describe('Clappr Stats', () => {
         expect(metrics.counters.fullscreen).to.be.equal(1)
     })
 
-    it('should update timer', () => {
+    it('should update timer', function() {
         this.plugin.on(ClapprStats.REPORT_EVENT, this.callback)
 
         this.simulator.play()
