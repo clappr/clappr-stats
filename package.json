@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "karma start --single-run",
-    "test_watch": "karma start",
+    "test:watch": "karma start",
     "watch": "webpack --progress --watch",
     "start": "webpack-dev-server",
     "build": "webpack --progress",
