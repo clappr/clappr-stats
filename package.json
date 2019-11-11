@@ -12,8 +12,8 @@
     "test_watch": "karma start",
     "watch": "webpack --progress --watch",
     "start": "webpack-dev-server",
-    "build": "webpack",
-    "release": "webpack --progress --optimize-minimize --output-filename clappr-stats.min.js"
+    "build": "webpack --progress",
+    "release": "MINIMIZE=true webpack --progress"
   },
   "browser": {
     "Clappr": "clappr"
