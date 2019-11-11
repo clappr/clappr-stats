@@ -1,11 +1,11 @@
 {
-  "name": "clappr-stats",
+  "name": "@clappr/stats-plugin",
   "version": "0.1.5",
   "description": "clappr playback stats report plugin",
   "main": "dist/clappr-stats.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:leandromoreira/clappr-stats.git"
+    "url": "git@github.com:clappr/clappr-stats.git"
   },
   "scripts": {
     "lint": "eslint src test",
