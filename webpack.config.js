@@ -14,7 +14,7 @@ const webpackConfig = (config) => {
     devtool: config.devtool || 'source-maps',
     entry: path.resolve(__dirname, 'src/clappr-stats.js'),
     externals: {
-      clappr: 'Clappr'
+      '@clappr/core': 'Clappr'
     },
     module: {
       rules: [
