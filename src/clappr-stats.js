@@ -1,9 +1,10 @@
-import {ContainerPlugin, Events, Log} from 'clappr'
+import {ContainerPlugin, Events, Log} from '@clappr/core'
 import get from 'lodash.get'
 
 
 export default class ClapprStats extends ContainerPlugin {
   get name() { return 'clappr_stats' }
+  get supportedVersion() { return { min: '0.4.2' } }
 
   get _playbackName() {return this.container.playback.name}
   get _playbackType() {return this.container.getPlaybackType()}
