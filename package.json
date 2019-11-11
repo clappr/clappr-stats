@@ -8,6 +8,8 @@
     "url": "git@github.com:leandromoreira/clappr-stats.git"
   },
   "scripts": {
+    "lint": "eslint src test",
+    "lint:fix": "eslint src test --fix",
     "test": "karma start --single-run",
     "test:watch": "karma start",
     "watch": "webpack --progress --watch",
