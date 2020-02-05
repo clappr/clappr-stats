@@ -6,7 +6,8 @@ export default class ClapprStats extends ContainerPlugin {
   get name() { return 'clappr_stats' }
   get supportedVersion() { return { min: '0.4.2' } }
 
-  get _playbackName() {return this.container.playback.name}
+  get _playback() {return this.container.playback}
+  get _playbackName() {return this._playback.name}
   get _playbackType() {return this.container.getPlaybackType()}
   _now() {
     const hasPerformanceSupport = window.performance && typeof(window.performance.now) === 'function'
@@ -40,7 +41,7 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_BITRATE, this.onBitrate)
     this.listenTo(this.container, Events.CONTAINER_STOP, this.stopReporting)
     this.listenTo(this.container, Events.CONTAINER_ENDED, this.stopReporting)
-    this.listenToOnce(this.container.playback, Events.PLAYBACK_PLAY_INTENT, this.startTimers)
+    this.listenToOnce(this._playback, Events.PLAYBACK_PLAY_INTENT, this.startTimers)
     this.listenToOnce(this.container, Events.CONTAINER_PLAY, this.onFirstPlaying)
     this.listenTo(this.container, Events.CONTAINER_PLAY, this.onPlay)
     this.listenTo(this.container, Events.CONTAINER_PAUSE, this.onPause)
@@ -49,8 +50,8 @@ export default class ClapprStats extends ContainerPlugin {
     this.listenTo(this.container, Events.CONTAINER_ERROR, () => this._inc('error'))
     this.listenTo(this.container, Events.CONTAINER_FULLSCREEN, () => this._inc('fullscreen'))
     this.listenTo(this.container, Events.CONTAINER_PLAYBACKDVRSTATECHANGED, (dvrInUse) => {dvrInUse && this._inc('dvrUsage')})
-    this.listenTo(this.container.playback, Events.PLAYBACK_PROGRESS, this.onProgress)
-    this.listenTo(this.container.playback, Events.PLAYBACK_TIMEUPDATE, this.onTimeUpdate)
+    this.listenTo(this._playback, Events.PLAYBACK_PROGRESS, this.onProgress)
+    this.listenTo(this._playback, Events.PLAYBACK_TIMEUPDATE, this.onTimeUpdate)
   }
 
   destroy() {
@@ -145,7 +146,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   onContainerUpdateWhilePlaying() {
-    if (this.container.playback.isPlaying()) {
+    if (this._playback.isPlaying()) {
       this._stop('watch')
       this._start('watch')
     }
@@ -241,7 +242,7 @@ export default class ClapprStats extends ContainerPlugin {
   }
 
   _html5FetchFPS() {
-    const videoTag = this.container.playback.el
+    const videoTag = this._playback.el
     const decodedFrames = videoTag.webkitDecodedFrameCount || videoTag.mozDecodedFrames || 0
     const droppedFrames = (videoTag.webkitDroppedFrameCount || (videoTag.mozParsedFrames - videoTag.mozDecodedFrames)) || 0
     const decodedFramesLastTime = decodedFrames - (this._lastDecodedFramesCount || 0)
