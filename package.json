@@ -29,10 +29,10 @@
     "lodash.get": "^4.4.2"
   },
   "peerDependencies": {
-    "@clappr/core": "^0.4.2"
+    "@clappr/core": "^0.8.0"
   },
   "devDependencies": {
-    "@clappr/core": "^0.4.2",
+    "@clappr/core": "^0.8.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.4",
     "babel-plugin-add-module-exports": "^0.2.1",
